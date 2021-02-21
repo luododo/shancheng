@@ -1,7 +1,7 @@
-# Gulimall高级篇_持续更新中
+# guilimail
 
 #### Description
-持续更新中
+谷粒商城
 
 #### Software Architecture
 Software architecture description
