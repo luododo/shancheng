@@ -1,5 +1,6 @@
 package com.atguigu.gulimail.product.service.impl;
 
+import com.atguigu.gulimail.product.vo.Catelog2Vo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,12 +67,50 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return parentPath.toArray(new Long[parentPath.size()]);
     }
 
+    @Override
+    public List<CategoryEntity> getLevel1() {
+        List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", 0));
+        return categoryEntities;
+    }
+
+    @Override
+    public Map<String, List<Catelog2Vo>> getCatelogJson() {
+        //1.查出所有1级分类
+        List<CategoryEntity> level1 = getLevel1();
+        //2.封装数据
+        Map<String, List<Catelog2Vo>> parent_cid = level1.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
+                    //1.查出1级分类的所有2级分类
+                    List<CategoryEntity> categoryEntities = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", v.getCatId()));
+                    //2.封装上面的结果
+                    List<Catelog2Vo> catelog2Vos = null;
+                    if (categoryEntities != null) {
+                        catelog2Vos = categoryEntities.stream().map(l2 -> {
+                            Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
+                            //查询当前2级分类的3级分类
+                            List<CategoryEntity> level3 = baseMapper.selectList(new QueryWrapper<CategoryEntity>().eq("parent_cid", l2.getCatId()));
+                            if (level3 != null) {
+                                List<Catelog2Vo.Catelog3Vo> collect = level3.stream().map(l3 -> {
+                                    //封装指定格式
+                                    Catelog2Vo.Catelog3Vo catelog3Vo = new Catelog2Vo.Catelog3Vo(l2.getCatId().toString(), l3.getCatId().toString(), l3.getName());
+                                    return catelog3Vo;
+                                }).collect(Collectors.toList());
+                                catelog2Vo.setCatalog3List(collect);
+                            }
+                            return catelog2Vo;
+                        }).collect(Collectors.toList());
+                    }
+                    return catelog2Vos;
+                }
+        ));
+        return parent_cid;
+    }
+
     private List<Long> findParentPath(Long catelogId, List<Long> paths) {
         //收集当前节点id
         paths.add(catelogId);
         CategoryEntity byId = this.getById(catelogId);
-        if (byId.getParentCid()!= 0) {
-            findParentPath(byId.getParentCid(),paths);
+        if (byId.getParentCid() != 0) {
+            findParentPath(byId.getParentCid(), paths);
         }
         return paths;
     }

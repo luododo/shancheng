@@ -1,5 +1,6 @@
 package com.atguigu.gulimail.product.service;
 
+import com.atguigu.gulimail.product.vo.Catelog2Vo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.gulimail.product.entity.CategoryEntity;
@@ -24,5 +25,9 @@ public interface CategoryService extends IService<CategoryEntity> {
 
     //找到catelogId完整路径
     Long[] findCatelogPath(Long catelogId);
+
+    List<CategoryEntity> getLevel1();
+
+    Map<String, List<Catelog2Vo>> getCatelogJson();
 }
 
