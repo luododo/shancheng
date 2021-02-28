@@ -76,7 +76,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
     @Override
     public Map<String, List<Catelog2Vo>> getCatelogJson() {
         /**
-         * 优化:将数据库中的多次查询变为一次,存至缓存selectList,需要的数据从list取出,避免频繁的数据库交互
+         * 优化:将数据库中的多次查询变为一次,存至缓存selectList,需要的数据从list取出,避免频繁的数据库交互1
          */
         List<CategoryEntity> selectList = baseMapper.selectList(null);
         //1.查出所有1级分类
