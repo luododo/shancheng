@@ -1,6 +1,10 @@
 package com.atguigu.gulimail.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.gulimail.product.vo.Catelog2Vo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,10 +24,14 @@ import com.atguigu.common.utils.Query;
 import com.atguigu.gulimail.product.dao.CategoryDao;
 import com.atguigu.gulimail.product.entity.CategoryEntity;
 import com.atguigu.gulimail.product.service.CategoryService;
+import org.springframework.util.StringUtils;
 
 
 @Service("categoryService")
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -75,23 +83,41 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catelog2Vo>> getCatelogJson() {
+        //加入缓存逻辑,缓存中存的数据是JSON字符串
+        //JSON跨语言,跨平台兼容
+        //从缓存中取出的数据要逆转为能用的对象类型,序列化与发序列化
+        String catalogJSON = stringRedisTemplate.opsForValue().get("catalogJSON");
+        if (StringUtils.isEmpty(catalogJSON)) {
+            //缓存中没有数据,查询数据库
+            Map<String, List<Catelog2Vo>> catelogJsonFromDb = getCatelogJsonFromDb();
+            //查到的数据再放入缓存,将对象转为json放入缓存中
+            String s = JSON.toJSONString(catelogJsonFromDb);
+            stringRedisTemplate.opsForValue().set("catalogJSON", s);
+            return catelogJsonFromDb;
+        }
+        Map<String, List<Catelog2Vo>> result = JSON.parseObject(catalogJSON, new TypeReference<Map<String, List<Catelog2Vo>>>() {
+        });
+        return result;
+    }
+
+    public Map<String, List<Catelog2Vo>> getCatelogJsonFromDb() {
         /**
-         * 优化:将数据库中的多次查询变为一次,存至缓存selectList,需要的数据从list取出,避免频繁的数据库交互1
+         * 优化:将数据库中的多次查询变为一次,存至缓存selectList,需要的数据从list取出,避免频繁的数据库交互
          */
         List<CategoryEntity> selectList = baseMapper.selectList(null);
         //1.查出所有1级分类
-        List<CategoryEntity> level1 = getParent_cid(selectList,0L);
+        List<CategoryEntity> level1 = getParent_cid(selectList, 0L);
         //2.封装数据
         Map<String, List<Catelog2Vo>> parent_cid = level1.stream().collect(Collectors.toMap(k -> k.getCatId().toString(), v -> {
                     //1.查出1级分类中所有2级分类
-                    List<CategoryEntity> categoryEntities = getParent_cid(selectList,v.getCatId());
+                    List<CategoryEntity> categoryEntities = getParent_cid(selectList, v.getCatId());
                     //2.封装上面的结果
                     List<Catelog2Vo> catelog2Vos = null;
                     if (categoryEntities != null) {
                         catelog2Vos = categoryEntities.stream().map(l2 -> {
                             Catelog2Vo catelog2Vo = new Catelog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName());
                             //查询当前2级分类的3级分类
-                            List<CategoryEntity> level3 = getParent_cid(selectList,l2.getCatId());
+                            List<CategoryEntity> level3 = getParent_cid(selectList, l2.getCatId());
                             if (level3 != null) {
                                 List<Catelog2Vo.Catelog3Vo> collect = level3.stream().map(l3 -> {
                                     //封装指定格式
@@ -109,7 +135,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return parent_cid;
     }
 
-    private List<CategoryEntity> getParent_cid(List<CategoryEntity> selectList,Long parent_cid) {
+    private List<CategoryEntity> getParent_cid(List<CategoryEntity> selectList, Long parent_cid) {
         List<CategoryEntity> collect = selectList.stream().filter(item -> item.getParentCid() == parent_cid).collect(Collectors.toList());
         return collect;
     }
