@@ -27,10 +27,10 @@ public class MyCacheConfig {
         if (redis.getKeyPrefix() != null) {
             config = config.prefixKeysWith(redis.getKeyPrefix());
         }
-        if (redis.isCacheNullValues()) {
+        if (!redis.isCacheNullValues()) {
             config = config.disableCachingNullValues();
         }
-        if (redis.isUseKeyPrefix()) {
+        if (!redis.isUseKeyPrefix()) {
             config = config.disableKeyPrefix();
         }
         return config;

@@ -3,12 +3,12 @@ package com.atguigu.gulimail.product.service.impl;
 import com.atguigu.gulimail.product.entity.AttrEntity;
 import com.atguigu.gulimail.product.service.AttrService;
 import com.atguigu.gulimail.product.vo.AttrGroupWithAttrsVo;
+import com.atguigu.gulimail.product.vo.skuItemvo.SkuItemVo;
+import com.atguigu.gulimail.product.vo.skuItemvo.SpuItemAttrGroupVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -79,6 +79,15 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return atttrVo.getAttrs() != null && atttrVo.getAttrs().size() > 0;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        //1.查出当前spu对应的所有属性分组信息以及当前分组下所有属性对应的值
+        //1.1当前spu有多少属性分组
+        AttrGroupDao baseMapper = this.getBaseMapper();
+        List<SpuItemAttrGroupVo> vos = baseMapper.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
+        return vos;
     }
 
 

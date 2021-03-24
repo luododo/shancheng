@@ -1,12 +1,18 @@
 package com.atguigu.gulimail.product;
 
 import com.atguigu.gulimail.product.dao.AttrAttrgroupRelationDao;
+import com.atguigu.gulimail.product.dao.AttrGroupDao;
+import com.atguigu.gulimail.product.dao.SkuSaleAttrValueDao;
 import com.atguigu.gulimail.product.entity.AttrAttrgroupRelationEntity;
 import com.atguigu.gulimail.product.entity.AttrEntity;
 import com.atguigu.gulimail.product.entity.BrandEntity;
 import com.atguigu.gulimail.product.service.AttrService;
 import com.atguigu.gulimail.product.service.BrandService;
 import com.atguigu.gulimail.product.service.CategoryService;
+import com.atguigu.gulimail.product.service.SkuInfoService;
+import com.atguigu.gulimail.product.vo.skuItemvo.SkuItemSaleAttrsVo;
+import com.atguigu.gulimail.product.vo.skuItemvo.SkuItemVo;
+import com.atguigu.gulimail.product.vo.skuItemvo.SpuItemAttrGroupVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -15,9 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +45,16 @@ class GulimailProductApplicationTests {
 	private AttrAttrgroupRelationDao relation;
 
 	@Autowired
+	private SkuInfoService skuInfoService;
+
+	@Autowired
 	private StringRedisTemplate stringRedisTemplate;
+
+	@Autowired
+	private AttrGroupDao attrGroupDao;
+
+	@Autowired
+	private SkuSaleAttrValueDao skuSaleAttrValueDao;
 
 	@Test
 	void testRedis(){
@@ -79,6 +91,22 @@ class GulimailProductApplicationTests {
 		System.out.println(entities);
 	}
 
+	@Test
+	void test4(){
+		List<SpuItemAttrGroupVo> attrGroupWithAttrsBySpuId = attrGroupDao.getAttrGroupWithAttrsBySpuId(100L, 225L);
+		System.out.println(attrGroupWithAttrsBySpuId);
+	}
+
+	@Test
+	void test5(){
+		List<SkuItemSaleAttrsVo> saleAttrsBySpuId = skuSaleAttrValueDao.getSaleAttrsBySpuId(5L);
+		System.out.println(saleAttrsBySpuId);
+	}
+	@Test
+	void test6(){
+		SkuItemVo item = skuInfoService.item(5L);
+		System.out.println(item);
+	}
 //	@Test
 //	void testUpload()throws FileNotFoundException{
 //		InputStream inputStream = new FileInputStream("D:\\picture\\03.jpg");
