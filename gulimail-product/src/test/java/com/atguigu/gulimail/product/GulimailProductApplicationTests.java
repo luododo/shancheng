@@ -24,6 +24,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @SpringBootTest
@@ -103,7 +104,7 @@ class GulimailProductApplicationTests {
 		System.out.println(saleAttrsBySpuId);
 	}
 	@Test
-	void test6(){
+	void test6() throws ExecutionException, InterruptedException {
 		SkuItemVo item = skuInfoService.item(5L);
 		System.out.println(item);
 	}
