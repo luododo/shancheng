@@ -9,7 +9,14 @@ spring:
       oss:
         endpoint: oss-cn-beijing.aliyuncs.com
         bucket: gulimall-adverseq
+      sms:
+        accessKeyId: LTAI5tFfDn61sba5WQXeHptA
+        secret: vB5warjhycfELOd46bhCHpFycIh9lL
+        templateCode: SMS_189520818
+        signName: 谷粒商城
+
   application:
     name: gulimall-third-party
+
 server:
   port: 30000
