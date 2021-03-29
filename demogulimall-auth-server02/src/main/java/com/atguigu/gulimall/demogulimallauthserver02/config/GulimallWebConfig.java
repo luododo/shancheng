@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class GulimallWebConfig implements WebMvcConfigurer{
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
+        //路径映射默认Get方式
         registry.addViewController("/login.html").setViewName("login");
         registry.addViewController("/reg.html").setViewName("reg");
     }

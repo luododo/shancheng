@@ -3,7 +3,7 @@
 
 <mapper namespace="com.atguigu.gulimail.member.dao.MemberLevelDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.atguigu.gulimail.member.entity.MemberLevelEntity" id="memberLevelMap">
         <result property="id" column="id"/>
         <result property="name" column="NAME"/>
@@ -17,5 +17,7 @@
         <result property="note" column="note"/>
     </resultMap>
 
-
+    <select id="getDefaultLevel" resultType="com.atguigu.gulimail.member.entity.MemberLevelEntity">
+    SELECT * FROM `ums_member_level` WHERE default_status = 1
+    </select>
 </mapper>
