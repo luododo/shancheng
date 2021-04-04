@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.demogulimallauthserver02.feign;
 
+import com.atguigu.common.to.SocialUser;
 import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.demogulimallauthserver02.vo.UserLoginVo;
 import com.atguigu.gulimall.demogulimallauthserver02.vo.UserRegistVo;
@@ -15,4 +16,7 @@ public interface MemberFeignService {
 
     @PostMapping("/member/member/login")
     R login(@RequestBody UserLoginVo vo);
+
+    @PostMapping("/member/member/oauth2/login")
+    R SocialLogin(@RequestBody SocialUser vo) throws Exception;
 }

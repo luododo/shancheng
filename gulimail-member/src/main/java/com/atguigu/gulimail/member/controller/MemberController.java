@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.atguigu.common.exception.BizCodeEnume;
+import com.atguigu.common.to.SocialUser;
 import com.atguigu.gulimail.member.exception.PhoneExistException;
 import com.atguigu.gulimail.member.exception.UserNameExistException;
 import com.atguigu.gulimail.member.feign.MemberFeignService;
@@ -115,6 +116,16 @@ public class MemberController {
         MemberEntity memberEntity = memberService.login(vo);
         if (memberEntity != null) {
             return R.ok();
+        } else {
+            return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(), BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
+        }
+    }
+
+    @PostMapping("/oauth2/login")
+    public R SocialLogin(@RequestBody SocialUser vo) throws Exception {
+        MemberEntity memberEntity = memberService.socialLogin(vo);
+        if (memberEntity != null) {
+            return R.ok().setData(memberEntity);
         } else {
             return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getCode(), BizCodeEnume.LOGINACCT_PASSWORD_INVAILD_EXCEPTION.getMsg());
         }

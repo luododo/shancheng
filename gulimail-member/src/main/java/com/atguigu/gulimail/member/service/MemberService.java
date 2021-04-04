@@ -1,5 +1,6 @@
 package com.atguigu.gulimail.member.service;
 
+import com.atguigu.common.to.SocialUser;
 import com.atguigu.gulimail.member.exception.PhoneExistException;
 import com.atguigu.gulimail.member.exception.UserNameExistException;
 import com.atguigu.gulimail.member.vo.MemberLoginVo;
@@ -28,5 +29,7 @@ public interface MemberService extends IService<MemberEntity> {
     void checkUserNameUnique(String userName) throws UserNameExistException;
 
     MemberEntity login(MemberLoginVo vo);
+
+    MemberEntity socialLogin(SocialUser vo) throws Exception;
 }
 
