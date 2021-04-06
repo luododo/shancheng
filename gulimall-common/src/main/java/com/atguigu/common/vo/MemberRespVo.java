@@ -1,12 +1,16 @@
-package com.atguigu.gulimall.demogulimallauthserver02.vo;
+package com.atguigu.common.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import lombok.Data;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
+
 @Data
 @ToString
-public class MemberRespVo {
+public class MemberRespVo implements Serializable{
     private Long id;
     /**
      * 会员等级id
