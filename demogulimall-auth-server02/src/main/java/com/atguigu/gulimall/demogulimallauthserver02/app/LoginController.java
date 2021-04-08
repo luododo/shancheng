@@ -133,10 +133,4 @@ public class LoginController {
             return "redirect:http://auth.gulimall.com/login.html";
         }
     }
-
-    @PostMapping("/login")
-    public String loginPage(){
-
-        return null;
-    }
 }
