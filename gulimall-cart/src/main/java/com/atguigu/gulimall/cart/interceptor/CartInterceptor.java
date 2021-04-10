@@ -18,9 +18,10 @@ import java.util.UUID;
 /**
  * 在执行目标方法前,先判断用户登录状态。并封装用户信息传递给Controller
  */
-public class CartInterceptor implements HandlerInterceptor{
+public class CartInterceptor implements HandlerInterceptor {
 
     public static ThreadLocal<UserInfoTo> threadLocal = new ThreadLocal<>();
+
     /*
     目标方法之前拦截
      */
@@ -30,33 +31,29 @@ public class CartInterceptor implements HandlerInterceptor{
         UserInfoTo userInfoTo = new UserInfoTo();
         HttpSession session = request.getSession();
         MemberRespVo member = (MemberRespVo) session.getAttribute(AuthServerConstant.LOGIN_USER);
-        if(member == null){
-            //用户没登录
-
-        }else {
-            //登录了
+        if (member != null) {
+            //用户登录
             userInfoTo.setUserId(member.getId());
-            Cookie[] cookies = request.getCookies();
-            if (cookies!=null && cookies.length>0){
-                for (Cookie cookie: cookies) {
-                    String name = cookie.getName();
-                    if(name.equals(CartConstant.TEMP_USER_COOKIE_NAME)){
-                        userInfoTo.setUserKey(cookie.getValue());
-                    }
+        }
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null && cookies.length > 0) {
+            for (Cookie cookie : cookies) {
+                String name = cookie.getName();
+                if (name.equals(CartConstant.TEMP_USER_COOKIE_NAME)) {
+                    userInfoTo.setUserKey(cookie.getValue());
+                    userInfoTo.setTempUser(true);
                 }
             }
         }
         //目标方法执行之前
         //如果没有临时用户,分配临时用户
-        if(StringUtils.isEmpty(userInfoTo.getUserKey())){
+        if (StringUtils.isEmpty(userInfoTo.getUserKey())) {
             String uuid = UUID.randomUUID().toString();
             userInfoTo.setUserKey(uuid);
-            userInfoTo.setTempUser(true);
         }
         threadLocal.set(userInfoTo);
         return true;
     }
-
 
     /*
     业务执行之后
@@ -65,14 +62,12 @@ public class CartInterceptor implements HandlerInterceptor{
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) throws Exception {
         UserInfoTo userInfoTo = threadLocal.get();
         //如果没有任何信息，创建临时用户，保存cookie
-        if(!userInfoTo.isTempUser()){
+        if (!userInfoTo.isTempUser()) {
             Cookie cookie = new Cookie(CartConstant.TEMP_USER_COOKIE_NAME, userInfoTo.getUserKey());
             cookie.setDomain("gulimall.com");
             //单位秒
             cookie.setMaxAge(CartConstant.TEMP_USER_COOKIE_TIMEOUT);
             response.addCookie(cookie);
         }
-
-
     }
 }

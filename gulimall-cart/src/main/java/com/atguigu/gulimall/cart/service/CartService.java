@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.cart.service;
 
+import com.atguigu.gulimall.cart.vo.Cart;
 import com.atguigu.gulimall.cart.vo.CartItem;
 
 import java.util.concurrent.ExecutionException;
@@ -9,4 +10,8 @@ public interface CartService {
     CartItem addToCart(Long skuId, Integer num) throws ExecutionException, InterruptedException;
     //查询购物车的某个购物项
     CartItem getCartItem(Long skuId);
+    //清空购物车
+    void clearCart(String cartKey);
+
+    Cart getCart() throws ExecutionException, InterruptedException;
 }

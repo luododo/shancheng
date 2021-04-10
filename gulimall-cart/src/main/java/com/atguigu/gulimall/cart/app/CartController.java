@@ -2,6 +2,7 @@ package com.atguigu.gulimall.cart.app;
 
 import com.atguigu.gulimall.cart.interceptor.CartInterceptor;
 import com.atguigu.gulimall.cart.service.CartService;
+import com.atguigu.gulimall.cart.vo.Cart;
 import com.atguigu.gulimall.cart.vo.CartItem;
 import com.atguigu.gulimall.cart.vo.UserInfoTo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,9 @@ public class CartController {
      * @return
      */
     @GetMapping("/cart.html")
-    public String cartListPage(){
-        UserInfoTo userInfoTo = CartInterceptor.threadLocal.get();
+    public String cartListPage(Model model) throws ExecutionException, InterruptedException {
+        Cart cart = cartService.getCart();
+        model.addAttribute("cart",cart);
         return "cartList";
     }
 
@@ -48,8 +50,8 @@ public class CartController {
     @GetMapping("/addToCartSuccess.html")
     public String addToCartSuccessPage(@RequestParam("skuId")Long skuId,Model model){
         //重定向到成功页面,再次查询购物车数据
-        CartItem item = cartService.getCartItem(skuId);
-        model.addAttribute("item",item);
+        CartItem items = cartService.getCartItem(skuId);
+        model.addAttribute("items",items);
         return "success";
     }
 }
