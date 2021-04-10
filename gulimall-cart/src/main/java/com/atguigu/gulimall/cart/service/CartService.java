@@ -14,4 +14,10 @@ public interface CartService {
     void clearCart(String cartKey);
 
     Cart getCart() throws ExecutionException, InterruptedException;
+    //勾选购物项
+    void checkItem(Long skuId, Integer check);
+    //修改购物项数量
+    void countItem(Long skuId, Integer num);
+    //删除购物项
+    void deleteItem(Long skuId);
 }

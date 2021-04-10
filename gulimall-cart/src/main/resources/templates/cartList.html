@@ -93,7 +93,7 @@
                     </div>
                     <div>
                         <ol>
-                            <li><input type="checkbox" class="check" th:checked="${item.check}"></li>
+                            <li><input type="checkbox" th:attr="skuId=${item.skuId}" class="itemcheck" th:checked="${item.check}"></li>
                             <li>
                                 <dt><img th:src="${item.image}" alt=""></dt>
                                 <dd style="width: 300px">
@@ -109,18 +109,17 @@
 
                             </li>
                             <li>
-                                <p>
-                                    <span>-</span>
-                                    <span th:text="${item.count}"></span>
-                                    <span>+</span>
+                                <p th:attr="skuId=${item.skuId}">
+                                    <span class="countOpsBtn">-</span>
+                                    <span class="countOpsNum" th:text="${item.count}"></span>
+                                    <span class="countOpsBtn">+</span>
                                 </p>
 
                             </li>
                             <li style="font-weight:bold"><p class="zj">
                                 ￥[[${#numbers.formatDecimal(item.totalPrice,3,2)}]]</p></li>
                             <li>
-                                <p>删除</p>
-
+                                <p class="deleteItemBtn" th:attr="skuId=${item.skuId}">删除</p>
                             </li>
                         </ol>
                     </div>
@@ -173,7 +172,7 @@
         </dl>
     </div>
     <div>
-        <button type="button">删除</button>
+        <button type="button" onclick="deleteItem()">删除</button>
 
     </div>
 </div>
@@ -766,6 +765,25 @@
         $(this).children("p").children("img").attr("src", "img/one_mian_gwc2.png")
     }).mouseout(function () {
         $(this).children("p").children("img").attr("src", "img/one_mian_gwc1.png")
-    })
+    });
+    $(".itemcheck").click(function () {
+        var skuId = $(this).attr("skuId");
+        var check = $(this).prop("checked");
+        location.href = "http://cart.gulimall.com/checkItem?skuId="+skuId+"&check="+(check?1:0);
+    });
+    $(".countOpsBtn").click(function () {
+        //1.获取skuId
+        var skuId = $(this).parent().attr("skuId");
+        //2.获取数量
+        var num = $(this).parent().find(".countOpsNum").text();
+        location.href = "http://cart.gulimall.com/countItem?skuId="+skuId+"&num="+num;
+    });
+    var deleteId = 0;
+    function deleteItem() {
+        location.href = "http://cart.gulimall.com/deleteItem?skuId="+deleteId;
+    }
+    $(".deleteItemBtn").click(function () {
+       deleteId = $(this).attr("skuId");
+    });
 </script>
 </html>
