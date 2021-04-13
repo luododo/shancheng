@@ -2,7 +2,7 @@ spring:
   datasource:
     username: root
     password: ac2015
-    url: jdbc:mysql://192.168.56.10:3306/gulimall_wms?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/gulimall_wms?serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
       date-format: yyyy-MM-dd HH:mm:ss
