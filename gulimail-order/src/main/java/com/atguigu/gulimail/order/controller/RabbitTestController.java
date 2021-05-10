@@ -2,6 +2,7 @@ package com.atguigu.gulimail.order.controller;
 
 import com.atguigu.gulimail.order.entity.OrderEntity;
 import com.atguigu.gulimail.order.entity.OrderReturnReasonEntity;
+import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ public class RabbitTestController {
     RabbitTemplate rabbitTemplate;
 
     @GetMapping("/sendMQ")
-    public String sendMQ(@RequestParam(value = "num",defaultValue = "10") Integer num) {
+    public String sendMQ(@RequestParam(value = "num", defaultValue = "10") Integer num) {
         OrderReturnReasonEntity entity = new OrderReturnReasonEntity();
         entity.setId(1L);
         entity.setCreateTime(new Date());
@@ -28,11 +29,13 @@ public class RabbitTestController {
         for (int i = 0; i < num; i++) {
             if (i % 2 == 0) {
                 entity.setName("Vc" + i);
-                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", entity);
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", entity
+                        , new CorrelationData(UUID.randomUUID().toString()));
             } else {
                 OrderEntity orderEntity = new OrderEntity();
                 orderEntity.setOrderSn(UUID.randomUUID().toString());
-                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity);
+                rabbitTemplate.convertAndSend("hello-java-exchange", "hello.java", orderEntity,
+                        new CorrelationData(UUID.randomUUID().toString()));
             }
         }
         return "ok";
