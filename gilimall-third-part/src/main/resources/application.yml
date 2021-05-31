@@ -4,14 +4,14 @@ spring:
       discovery:
         server-addr: 127.0.0.1:8848
     alicloud:
-      access-key: 123456
-      secret-key: 123456
+      access-key:
+      secret-key:
       oss:
         endpoint: oss-cn-beijing.aliyuncs.com
         bucket: gulimall-adverseq
       sms:
-        accessKeyId: 123456
-        secret: 123456
+        accessKeyId:
+        secret:
         templateCode: SMS_189520818
         signName: 谷粒商城
 

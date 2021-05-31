@@ -1,4 +1,4 @@
-package com.atguigu.gulimail.product.config;
+package com.atguigu.gulimail.order.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

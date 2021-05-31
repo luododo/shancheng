@@ -43,8 +43,10 @@ public class Cart {
         //1.计算购物车所有商品总价
         if (Items != null && Items.size() > 0) {
             for (CartItem item : Items) {
-                BigDecimal totalPrice = item.getTotalPrice();
-                amount = amount.add(totalPrice);
+                if(item.getCheck()){
+                    BigDecimal totalPrice = item.getTotalPrice();
+                    amount = amount.add(totalPrice);
+                }
             }
         }
         //2.减去优惠价格

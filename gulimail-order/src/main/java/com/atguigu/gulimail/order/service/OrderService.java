@@ -1,5 +1,6 @@
 package com.atguigu.gulimail.order.service;
 
+import com.atguigu.gulimail.order.vo.OrderConfirmVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.gulimail.order.entity.OrderEntity;
@@ -16,5 +17,8 @@ import java.util.Map;
 public interface OrderService extends IService<OrderEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    //订单确认页返回需要的数据
+    OrderConfirmVo confirmOrder();
 }
 
