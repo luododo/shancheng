@@ -22,10 +22,35 @@ public class OrderConfirmVo {
     @Setter @Getter
     Integer integration;
 
-    //总价
-    BigDecimal total;
+    //唯一令牌,多次提交订单防重（如网络问题用户多次提交订单)
+    @Getter @Setter
+    String token;
 
+    //总价
+    //BigDecimal total;
+
+    public BigDecimal getTotal() {
+        BigDecimal sum = new BigDecimal("0");
+        if(items!=null){
+            for (OrderItemVo item : items){
+                BigDecimal multiply = item.getPrice().multiply(new BigDecimal(item.getCount().toString()));
+                sum = sum.add(multiply);
+            }
+        }
+        return sum;
+    }
 
     //应付价格
-    BigDecimal payPrice;
+    //BigDecimal payPrice;
+
+    public BigDecimal getPayPrice() {
+        BigDecimal sum = new BigDecimal("0");
+        if(items!=null){
+            for (OrderItemVo item : items){
+                BigDecimal multiply = item.getPrice().multiply(new BigDecimal(item.getCount().toString()));
+                sum = sum.add(multiply);
+            }
+        }
+        return sum;
+    }
 }

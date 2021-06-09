@@ -160,9 +160,10 @@ public class CartServiceImpl implements CartService {
             //获取所有被选中的购物项
             List<CartItem> collect = cartItems.stream().filter(item -> item.getCheck())
                     .map(item-> {
-                        BigDecimal price = productFeignService.getPrice(item.getSkuId());
+                        R price = productFeignService.getPrice(item.getSkuId());
                         //更新为最新价格
-                        item.setPrice(price);
+                        String data = (String)price.get("data");
+                        item.setPrice(new BigDecimal(data));
                         return item;
                     })
                     .collect(Collectors.toList());
