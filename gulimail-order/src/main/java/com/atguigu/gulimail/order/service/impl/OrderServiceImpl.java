@@ -1,12 +1,16 @@
 package com.atguigu.gulimail.order.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimail.order.feign.CartFeginService;
 import com.atguigu.gulimail.order.feign.MemberFeginService;
+import com.atguigu.gulimail.order.feign.WmsFeignService;
 import com.atguigu.gulimail.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimail.order.vo.MemberAddressVo;
 import com.atguigu.gulimail.order.vo.OrderConfirmVo;
 import com.atguigu.gulimail.order.vo.OrderItemVo;
+import com.atguigu.gulimail.order.vo.SkuStockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -37,6 +42,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     CartFeginService cartFeginService;
+
+    @Autowired
+    WmsFeignService wmsFeignService;
 
     @Autowired
     ThreadPoolExecutor executor;
@@ -69,12 +77,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             RequestContextHolder.setRequestAttributes(requestAttributes);
             List<OrderItemVo> items = cartFeginService.getCurrentUserCartItems();
             confirmVo.setItems(items);
-        }, executor);
+        }, executor).thenRunAsync(()->{
+            RequestContextHolder.setRequestAttributes(requestAttributes);
+            List<OrderItemVo> items = confirmVo.getItems();
+            List<Long> collect = items.stream().map(item -> item.getSkuId()).collect(Collectors.toList());
+            R hasStock = wmsFeignService.getSkuHasStock(collect);
+            List<SkuStockVo> data = hasStock.getData(new TypeReference<List<SkuStockVo>>() {
+            });
+            if(data!=null){
+                Map<Long, Boolean> collect1 = data.stream().collect(Collectors.toMap(SkuStockVo::getSkuId, SkuStockVo::getHasStock));
+                confirmVo.setStocks(collect1);
+            }
+        },executor);
         //3.查询用户积分
         Integer integration = memberRespVo.getIntegration();
         confirmVo.setIntegration(integration);
         CompletableFuture.allOf(getAddressFuture,getCartFuture).get();
         return confirmVo;
     }
-
 }

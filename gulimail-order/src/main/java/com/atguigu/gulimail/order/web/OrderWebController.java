@@ -19,7 +19,7 @@ public class OrderWebController {
     @GetMapping("/toTrade")
     public String toTrade(Model model,HttpServletRequest request ) throws ExecutionException, InterruptedException {
         OrderConfirmVo confirmVo = orderService.confirmOrder();
-        model.addAttribute("",confirmVo);
+        model.addAttribute("orderConfirmData",confirmVo);
         return "confirm";
     }
 }

@@ -214,7 +214,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
     @Override
     public void up(Long spuId) {
-//1.查出当前spuid对应的所有sku信息,品牌的名字
+        //1.查出当前spuid对应的所有sku信息,品牌的名字
         List<SkuInfoEntity> skuInfoEntities = skuInfoService.getSkusBySpuId(spuId);
         List<Long> skuIdList = skuInfoEntities.stream().map(SkuInfoEntity::getSkuId).collect(Collectors.toList());
         //当前sku所有可以被用来检索的规格属性
@@ -236,7 +236,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         //发送远程调用,查是否有库存;
         Map<Long, Boolean> sotckMap = null;
         try {
-            R hasStock = wareFeignService.getHasStock(skuIdList);
+            R hasStock = wareFeignService.getSkuHasStock(skuIdList);
             TypeReference<List<SkuHasStockVo>> typeReference = new TypeReference<List<SkuHasStockVo>>() {
             };
             sotckMap = hasStock.getData(typeReference).stream().collect(Collectors.toMap(SkuHasStockVo::getSkuId, item -> item.getHasStock()));
