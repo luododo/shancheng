@@ -13,7 +13,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableRabbit
 @SpringBootApplication
 @EnableRedisHttpSession
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.atguigu.gulimail.order.feign")
 @EnableDiscoveryClient
 public class GulimailOrderApplication {
 
