@@ -9,6 +9,7 @@ public enum BizCodeEnume {
     USER_EXIST_EXCEPTION(15001,"用户已存在"),
     PHONE_EXIST_EXCEPTION(15002,"手机号码已存在"),
     PHONE_NULL_EXCEPTION(15003,"未输入手机号码"),
+    NO_STOCK_EXCEPTION(21000,"商品库存不足"),
     LOGINACCT_PASSWORD_INVAILD_EXCEPTION(15002,"账号或密码错误");
 
 

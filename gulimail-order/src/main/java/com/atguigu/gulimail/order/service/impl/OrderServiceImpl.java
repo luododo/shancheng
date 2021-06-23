@@ -1,6 +1,7 @@
 package com.atguigu.gulimail.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimail.order.constant.OrderConstant;
@@ -127,6 +128,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         submitVoThreadLocal.set(vo);
         SubmitOrderResponseVo responseVo = new SubmitOrderResponseVo();
         MemberRespVo memberRespVo = LoginUserInterceptor.loginUser.get();
+        responseVo.setCode(0);
         //1.验证令牌(令牌的对比和删除必须保证原子性)
         //如果调用get方法与传入的val相同，调用del方法，不相同返回0;0失败，1成功
         String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
@@ -151,15 +153,34 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 //3.保存订单
                 saveOrder(order);
                 //4.锁定库存,有异常回滚数据
-
+                //订单号,skuId,skuName,数量
+                WareSkuLockVo lockVo = new WareSkuLockVo();
+                lockVo.setOrderSn(order.getOrder().getOrderSn());
+                List<OrderItemVo> locks = order.getItems().stream().map(item -> {
+                    OrderItemVo itemVo = new OrderItemVo();
+                    itemVo.setSkuId(item.getSkuId());
+                    itemVo.setCount(item.getSkuQuantity());
+                    itemVo.setTitle(item.getSkuName());
+                    return itemVo;
+                }).collect(Collectors.toList());
+                lockVo.setLocks(locks);
+                //远程锁库存
+                R r = wmsFeignService.orderLockStock(lockVo);
+                if (r.getCode()==0){
+                    //成功
+                    responseVo.setOrder(order.getOrder());
+                    return responseVo;
+                }else {
+                    //失败
+                    //throw new NoStockException(1L);
+                    responseVo.setCode(3);
+                    return responseVo;
+                }
             }else {
                 responseVo.setCode(2);
                 return responseVo;
             }
         }
-
-
-        return null;
     }
 
     private OrderCreateTo createOrder() {
@@ -172,6 +193,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         List<OrderItemEntity> itemEntities = buildOrderItems(orderSn);
         //验价
         computePrice(orderEntity, itemEntities);
+        orderCreateTo.setItems(itemEntities);
+        orderCreateTo.setOrder(orderEntity);
         return orderCreateTo;
     }
 
@@ -193,7 +216,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         BigDecimal couponAmount = new BigDecimal("0.0");
         BigDecimal promotionAmount = new BigDecimal("0.0");
         BigDecimal integrationAmount = new BigDecimal("0.0");
-        BigDecimal giftIntegration = new BigDecimal("0.0");
         Integer integration = 0;
         Integer growth = 0;
         BigDecimal total = new BigDecimal("0.0");
@@ -211,7 +233,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setCouponAmount(couponAmount);
         orderEntity.setIntegrationAmount(integrationAmount);
         orderEntity.setGrowth(growth);
-
+        orderEntity.setIntegration(integration);
     }
 
     private OrderEntity buildOrder(String orderSn) {
