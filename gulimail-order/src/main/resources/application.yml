@@ -2,7 +2,7 @@ spring:
   datasource:
     username: root
     password: ac2015
-    url: jdbc:mysql://localhost:3306/gulimall_oms
+    url: jdbc:mysql://localhost:3306/gulimall_oms?serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml

@@ -35,7 +35,7 @@ public class OrderWebController {
      */
     @PostMapping("/submitOrder")
     public String submitOrder(OrderSubmitVo vo, Model model, RedirectAttributes redirectAttributes) {
-        try {
+        //try {
             SubmitOrderResponseVo responseVo = orderService.submitOrder(vo);
             if (responseVo.getCode() == 0) {
                 model.addAttribute("submitOrderResp", responseVo);
@@ -54,13 +54,13 @@ public class OrderWebController {
                 }
                 redirectAttributes.addFlashAttribute("msg", msg);
                 return "redirect:http://order.gulimall.com/toTrade";
+           // }
+        //}catch (Exception e){
+            //if(e instanceof NoStockException){
+                //String msg = ((NoStockException) e).getMessage();
+                //redirectAttributes.addFlashAttribute("msg",msg);
             }
-        }catch (Exception e){
-            if(e instanceof NoStockException){
-                String msg = ((NoStockException) e).getMessage();
-                redirectAttributes.addFlashAttribute("msg",msg);
-            }
-            return "redirect:http://order.gulimall.com/toTrade";
-        }
+            //return "redirect:http://order.gulimall.com/toTrade";
+        //}
     }
 }
