@@ -12,7 +12,7 @@ import org.springframework.lang.Nullable;
 
 import javax.annotation.PostConstruct;
 
-@Configuration
+//@Configuration
 public class MyRabbitConfig {
 
     @Autowired
