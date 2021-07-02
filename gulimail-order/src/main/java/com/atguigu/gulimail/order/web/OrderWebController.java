@@ -5,6 +5,7 @@ import com.atguigu.gulimail.order.service.OrderService;
 import com.atguigu.gulimail.order.vo.OrderConfirmVo;
 import com.atguigu.gulimail.order.vo.OrderSubmitVo;
 import com.atguigu.gulimail.order.vo.SubmitOrderResponseVo;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,9 @@ public class OrderWebController {
 
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @GetMapping("/toTrade")
     public String toTrade(Model model, HttpServletRequest request) throws ExecutionException, InterruptedException {
