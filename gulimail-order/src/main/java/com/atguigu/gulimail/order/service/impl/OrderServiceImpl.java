@@ -321,7 +321,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private OrderItemEntity buildOrderItem(OrderItemVo cartItem) {
         OrderItemEntity itemEntity = new OrderItemEntity();
         //1.订单信息:订单号
-        //2.商品sup信息
+        //2.商品spu信息
         Long skuId = cartItem.getSkuId();
         R r = productFeignService.getSpuInfoBySkuId(skuId);
         SpuInfoVo data = r.getData(new TypeReference<SpuInfoVo>() {
@@ -330,7 +330,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         itemEntity.setSpuBrand(data.getBrandId().toString());
         itemEntity.setSpuName(data.getSpuName());
         itemEntity.setCategoryId(data.getCatalogId());
-        //3.商品sku信息0
+        //3.商品sku信息
         itemEntity.setSkuId(skuId);
         itemEntity.setSkuName(cartItem.getTitle());
         itemEntity.setSkuPic(cartItem.getImage());
