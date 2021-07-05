@@ -16,6 +16,7 @@ import com.atguigu.gulimail.order.service.OrderItemService;
 import com.atguigu.gulimail.order.to.OrderCreateTo;
 import com.atguigu.gulimail.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -67,6 +68,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     StringRedisTemplate redisTemplate;
+
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     @Autowired
     ThreadPoolExecutor executor;
@@ -172,8 +176,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                     return responseVo;
                 }else {
                     //失败
-                    //throw new NoStockException(1L);
+                    //throw new NoStockException(msg);
                     responseVo.setCode(3);
+                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order);
                     return responseVo;
                 }
             }else {
@@ -182,6 +187,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             }
         }
     }
+
+
+    @Override
+    public OrderEntity getOrderByOrderSn(String orderSn) {
+        OrderEntity entity = this.getOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
+        return entity;
+    }
+
 
     private OrderCreateTo createOrder() {
         OrderCreateTo orderCreateTo = new OrderCreateTo();
@@ -204,6 +217,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         this.save(orderEntity);
         List<OrderItemEntity> orderItems = order.getItems();
         orderItemService.saveBatch(orderItems);
+    }
+
+    /**
+     * 关闭订单
+     * @param entity
+     */
+    @Override
+    public void closeOrder(OrderEntity entity) {
+        //查询订单最新状态
+        OrderEntity orderEntity = this.getById(entity.getId());
+        if(orderEntity.getStatus()==OrderStatusEnum.CREATE_NEW.getCode()){
+            //关闭订单
+            OrderEntity update = new OrderEntity();
+            update.setId(entity.getId());
+            update.setStatus(OrderStatusEnum.CANCLED.getCode());
+            this.updateById(update);
+        }
     }
 
     /**
@@ -257,7 +287,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         entity.setReceiverProvince(data.getAddress().getProvince());
         entity.setReceiverRegion(data.getAddress().getRegion());
         //设置订单状态
-        entity.setStatus(OrderStatusEnum.CREATE_NEM.getCode());
+        entity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
         entity.setAutoConfirmDay(7);
         entity.setDeleteStatus(0);//删除状态,0未删除
         return entity;

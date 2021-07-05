@@ -1,7 +1,7 @@
 package com.atguigu.gulimail.order.enume;
 
 public enum OrderStatusEnum {
-    CREATE_NEM(0,""),
+    CREATE_NEW(0,""),
     PAYED(1,""),
     SENDED(2,""),
     RECIEVED(3,""),

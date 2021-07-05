@@ -56,9 +56,9 @@ public class MyRabbitConfig {
 
     //第一次监听消息时，idea会连接rabbitMQ,此时才会创建rdbbitMQ中没有的队列、交换机和绑定关系
     //如果需要修改rabbitMQ中已存在的队列交换机,需要先删除，然后再次创建
-    @RabbitListener(queues = "stock.release.stock.queue")
-    public void listener(WareInfoEntity entity, Channel channel, Message msg) throws IOException {
-        System.out.println("收到过期的订单信息:准备关闭订单" + entity.getId());
-        channel.basicAck(msg.getMessageProperties().getDeliveryTag(), false);
-    }
+//    @RabbitListener(queues = "stock.release.stock.queue")
+//    public void listener(WareInfoEntity entity, Channel channel, Message msg) throws IOException {
+//        System.out.println("收到过期的订单信息:准备关闭订单" + entity.getId());
+//        channel.basicAck(msg.getMessageProperties().getDeliveryTag(), false);
+//    }
 }
