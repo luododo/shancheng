@@ -1,5 +1,6 @@
 package com.atguigu.gulimail.ware.listener;
 
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.to.mq.StockLockedTo;
 import com.atguigu.gulimail.ware.service.WareSkuService;
 import com.rabbitmq.client.Channel;
@@ -22,6 +23,21 @@ public class StockReleaseListener {
         try {
             wareSkuService.unlockStock(to);
             System.out.println("收到接收解锁库存的信息");
+            //不批量处理
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
+        }catch (Exception e){
+            System.out.println("rabbitMQ错误"+e.getMessage());
+            //将消息重新回队
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(),true);
+        }
+    }
+
+    @RabbitHandler
+    public void handleOrderCloseRelease(OrderTo orderTo,Message message,Channel channel) throws IOException {
+
+        try {
+            wareSkuService.unlockStock(orderTo);
+            System.out.println("订单关闭，准备解锁库存");
             //不批量处理
             channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
         }catch (Exception e){

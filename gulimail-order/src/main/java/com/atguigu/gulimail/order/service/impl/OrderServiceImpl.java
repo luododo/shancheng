@@ -2,6 +2,7 @@ package com.atguigu.gulimail.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimail.order.constant.OrderConstant;
@@ -17,6 +18,7 @@ import com.atguigu.gulimail.order.to.OrderCreateTo;
 import com.atguigu.gulimail.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -233,6 +235,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             update.setId(entity.getId());
             update.setStatus(OrderStatusEnum.CANCLED.getCode());
             this.updateById(update);
+            OrderTo orderTo = new OrderTo();
+            BeanUtils.copyProperties(orderEntity,orderTo);
+            rabbitTemplate.convertAndSend("order-event-exchange","order.release.order.#",orderTo);
         }
     }
 

@@ -3,6 +3,7 @@ package com.atguigu.gulimail.ware.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.to.SkuHasStockVo;
+import com.atguigu.common.to.mq.OrderTo;
 import com.atguigu.common.to.mq.StockDetailTo;
 import com.atguigu.common.to.mq.StockLockedTo;
 import com.atguigu.common.utils.R;
@@ -212,6 +213,23 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
             }
         } else {
             //没有，库存锁定失败，库存回滚，这种情况无需解锁
+        }
+    }
+
+    /*
+     *防止因为订单服务故障,导致订单状态未改变，从而无法解锁库存
+     */
+    @Transactional
+    @Override
+    public void unlockStock(OrderTo orderTo) {
+        String orderSn = orderTo.getOrderSn();
+        //查询最新库存状态
+        WareOrderTaskEntity task = wareOrderTaskService.getOrderTaskByOrderSn(orderSn);
+        Long id = task.getId();
+        List<WareOrderTaskDetailEntity> list = orderDetailService.list(new QueryWrapper<WareOrderTaskDetailEntity>().eq("task_id", id)
+                .eq("lock_status", 1));
+        for (WareOrderTaskDetailEntity entity : list) {
+            unLockStock(entity.getSkuId(), entity.getWareId(), entity.getSkuNum(), entity.getId());
         }
     }
 
