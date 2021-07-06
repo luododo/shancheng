@@ -160,7 +160,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                     BeanUtils.copyProperties(detailEntity, detailTo);
                     //防止回滚之后找不到数据,所以保存完整库存单
                     to.setDetail(detailTo);
-                    rabbitTemplate.convertAndSend("sotck-event-exchange", "stock.locked", to);
+                    rabbitTemplate.convertAndSend("stock-event-exchange", "stock.locked", to);
                     break;
                 } else {
                     //当前仓库库存不足，尝试下一个仓库

@@ -173,12 +173,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 if (r.getCode()==0){
                     //成功
                     responseVo.setOrder(order.getOrder());
+                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order.getOrder());
                     return responseVo;
                 }else {
                     //失败
                     //throw new NoStockException(msg);
                     responseVo.setCode(3);
-                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order);
                     return responseVo;
                 }
             }else {

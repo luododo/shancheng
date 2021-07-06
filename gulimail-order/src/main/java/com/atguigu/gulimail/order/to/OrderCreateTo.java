@@ -4,6 +4,7 @@ import com.atguigu.gulimail.order.entity.OrderEntity;
 import com.atguigu.gulimail.order.entity.OrderItemEntity;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 

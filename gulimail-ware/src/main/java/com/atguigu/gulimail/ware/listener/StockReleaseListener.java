@@ -19,9 +19,9 @@ public class StockReleaseListener {
 
     @RabbitHandler
     public void handleStockLockedRelease(StockLockedTo to, Message message, Channel channel) throws IOException {
-        System.out.println("收到接收解锁库存的信息");
         try {
             wareSkuService.unlockStock(to);
+            System.out.println("收到接收解锁库存的信息");
             //不批量处理
             channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
         }catch (Exception e){
