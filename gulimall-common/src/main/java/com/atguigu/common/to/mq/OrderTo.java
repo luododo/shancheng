@@ -3,15 +3,15 @@ package com.atguigu.common.to.mq;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class OrderTo {
+public class OrderTo{
     /**
      * id
      */
-    @TableId
     private Long id;
     /**
      * member_id

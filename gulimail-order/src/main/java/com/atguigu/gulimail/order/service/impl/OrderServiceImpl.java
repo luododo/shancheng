@@ -237,7 +237,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             this.updateById(update);
             OrderTo orderTo = new OrderTo();
             BeanUtils.copyProperties(orderEntity,orderTo);
-            rabbitTemplate.convertAndSend("order-event-exchange","order.release.order.#",orderTo);
+            rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
         }
     }
 

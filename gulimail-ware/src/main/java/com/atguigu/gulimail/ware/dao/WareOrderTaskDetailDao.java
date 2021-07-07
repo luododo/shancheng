@@ -13,5 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface WareOrderTaskDetailDao extends BaseMapper<WareOrderTaskDetailEntity> {
-	
+
+//    static void save1(WareOrderTaskDetailEntity detailEntity) {
+//    }
 }

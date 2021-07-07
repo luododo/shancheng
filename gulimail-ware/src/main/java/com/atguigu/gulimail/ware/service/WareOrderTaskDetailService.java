@@ -16,5 +16,7 @@ import java.util.Map;
 public interface WareOrderTaskDetailService extends IService<WareOrderTaskDetailEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+//    void save1(WareOrderTaskDetailEntity detailEntity);
 }
 

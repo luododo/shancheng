@@ -36,8 +36,8 @@ public class StockReleaseListener {
     public void handleOrderCloseRelease(OrderTo orderTo,Message message,Channel channel) throws IOException {
 
         try {
-            wareSkuService.unlockStock(orderTo);
             System.out.println("订单关闭，准备解锁库存");
+            wareSkuService.unlockStock(orderTo);
             //不批量处理
             channel.basicAck(message.getMessageProperties().getDeliveryTag(),false);
         }catch (Exception e){

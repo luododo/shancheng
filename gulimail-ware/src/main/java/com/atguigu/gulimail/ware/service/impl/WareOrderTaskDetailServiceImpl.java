@@ -1,7 +1,10 @@
 package com.atguigu.gulimail.ware.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +19,9 @@ import com.atguigu.gulimail.ware.service.WareOrderTaskDetailService;
 @Service("wareOrderTaskDetailService")
 public class WareOrderTaskDetailServiceImpl extends ServiceImpl<WareOrderTaskDetailDao, WareOrderTaskDetailEntity> implements WareOrderTaskDetailService {
 
+    @Autowired
+    private WareOrderTaskDetailDao wareOrderTaskDetailDao;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<WareOrderTaskDetailEntity> page = this.page(
@@ -25,5 +31,10 @@ public class WareOrderTaskDetailServiceImpl extends ServiceImpl<WareOrderTaskDet
 
         return new PageUtils(page);
     }
+
+//    @Override
+//    public void save1(WareOrderTaskDetailEntity detailEntity) {
+//        WareOrderTaskDetailDao.save1(detailEntity);
+//    }
 
 }

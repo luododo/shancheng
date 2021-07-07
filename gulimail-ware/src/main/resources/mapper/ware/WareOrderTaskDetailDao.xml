@@ -13,6 +13,4 @@
         <result property="wareId" column="ware_id"/>
         <result property="lockStatus" column="lock_status"/>
     </resultMap>
-
-
 </mapper>
