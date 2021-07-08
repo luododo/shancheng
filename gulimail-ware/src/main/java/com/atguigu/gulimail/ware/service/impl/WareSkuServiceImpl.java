@@ -122,12 +122,10 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     @Transactional(rollbackFor = NoStockException.class)
     @Override
     public Boolean orderLockStock(WareSkuLockVo vo) {
-
         //保存库存工作单详情,方便追溯
         WareOrderTaskEntity taskEntity = new WareOrderTaskEntity();
         taskEntity.setOrderSn(vo.getOrderSn());
         orderService.save(taskEntity);
-
         List<OrderItemVo> locks = vo.getLocks();
         List<SkuWareHasStock> collect = locks.stream().map(item -> {
             SkuWareHasStock stock = new SkuWareHasStock();
@@ -153,7 +151,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 Long count = wareSkuDao.lockSkuStock(skuId, wareId, hasStock.getNum());
                 if (count == 1) {
                     skuStocked = true;
-                    WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity(null, skuId, "", null, taskEntity.getId(), wareId, 1);
+                    WareOrderTaskDetailEntity detailEntity = new WareOrderTaskDetailEntity(null, skuId, "", hasStock.getNum(), taskEntity.getId(), wareId, 1);
                     orderDetailService.save(detailEntity);
                     StockLockedTo to = new StockLockedTo();
                     StockDetailTo detailTo = new StockDetailTo();
@@ -229,6 +227,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         List<WareOrderTaskDetailEntity> list = orderDetailService.list(new QueryWrapper<WareOrderTaskDetailEntity>().eq("task_id", id)
                 .eq("lock_status", 1));
         for (WareOrderTaskDetailEntity entity : list) {
+            System.out.println("***************"+entity.getSkuNum());
             unLockStock(entity.getSkuId(), entity.getWareId(), entity.getSkuNum(), entity.getId());
         }
     }

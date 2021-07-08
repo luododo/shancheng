@@ -22,7 +22,7 @@
     </select>
 
     <select id="listWareIdHasSkuStock" resultType="java.lang.Long">
-        SELECT ware_id FROM `wms_ware_sku` WHERE sku_id = #{skuId} AND (stock - IFNULL(stock_locked,0)) > 0
+        SELECT ware_id FROM `wms_ware_sku` WHERE sku_id = #{skuId} AND stock - IFNULL(stock_locked,0) > 0
     </select>
 
     <update id="lockSkuStock">
