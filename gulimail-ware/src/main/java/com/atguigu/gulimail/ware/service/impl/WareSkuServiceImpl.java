@@ -227,7 +227,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         List<WareOrderTaskDetailEntity> list = orderDetailService.list(new QueryWrapper<WareOrderTaskDetailEntity>().eq("task_id", id)
                 .eq("lock_status", 1));
         for (WareOrderTaskDetailEntity entity : list) {
-            System.out.println("***************"+entity.getSkuNum());
             unLockStock(entity.getSkuId(), entity.getWareId(), entity.getSkuNum(), entity.getId());
         }
     }
