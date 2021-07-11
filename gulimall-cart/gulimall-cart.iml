@@ -2,27 +2,7 @@
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Spring" name="Spring">
-      <configuration>
-        <fileset id="fileset" name="Spring Application Context" removed="false">
-          <file>file://$MODULE_DIR$/src/main/java/com/atguigu/gulimall/cart/GulimallCartApplication.java</file>
-          <file>file://$MODULE_DIR$/src/main/java/com/atguigu/gulimall/cart/config/GulimallSessionConfig.java</file>
-          <file>file://$MODULE_DIR$/src/main/java/com/atguigu/gulimall/cart/config/GulimallWebConfig.java</file>
-          <file>file://$MODULE_DIR$/src/main/java/com/atguigu/gulimall/cart/config/MyThreadConfig.java</file>
-          <file>jar://D:/Program Flies/maven_rep/com/alibaba/cloud/spring-cloud-alibaba-nacos-config/2.1.0.RELEASE/spring-cloud-alibaba-nacos-config-2.1.0.RELEASE.jar!/com/alibaba/cloud/nacos/NacosConfigBootstrapConfiguration.class</file>
-          <file>file://D:/Program Flies/maven_rep/com/alibaba/cloud/spring-cloud-alibaba-nacos-config/2.1.0.RELEASE/spring-cloud-alibaba-nacos-config-2.1.0.RELEASE.jar</file>
-          <file>jar://D:/Program Flies/maven_rep/com/alibaba/cloud/spring-cloud-alibaba-nacos-discovery/2.1.0.RELEASE/spring-cloud-alibaba-nacos-discovery-2.1.0.RELEASE.jar!/com/alibaba/cloud/nacos/discovery/configclient/NacosDiscoveryClientConfigServiceBootstrapConfiguration.class</file>
-          <file>jar://D:/Program Flies/maven_rep/com/alibaba/cloud/spring-cloud-alibaba-nacos-discovery/2.1.0.RELEASE/spring-cloud-alibaba-nacos-discovery-2.1.0.RELEASE.jar!/com/alibaba/cloud/nacos/ribbon/NacosRibbonClientConfiguration.class</file>
-          <file>file://D:/Program Flies/maven_rep/com/alibaba/cloud/spring-cloud-alibaba-nacos-discovery/2.1.0.RELEASE/spring-cloud-alibaba-nacos-discovery-2.1.0.RELEASE.jar</file>
-          <file>jar://D:/Program Flies/maven_rep/io/springfox/springfox-schema/2.9.2/springfox-schema-2.9.2.jar!/springfox/documentation/schema/configuration/ModelsConfiguration.class</file>
-          <file>file://D:/Program Flies/maven_rep/io/springfox/springfox-schema/2.9.2/springfox-schema-2.9.2.jar</file>
-          <file>jar://D:/Program Flies/maven_rep/io/springfox/springfox-spring-web/2.9.2/springfox-spring-web-2.9.2.jar!/springfox/documentation/spring/web/SpringfoxWebMvcConfiguration.class</file>
-          <file>file://D:/Program Flies/maven_rep/io/springfox/springfox-spring-web/2.9.2/springfox-spring-web-2.9.2.jar</file>
-          <file>jar://D:/Program Flies/maven_rep/io/springfox/springfox-swagger-common/2.9.2/springfox-swagger-common-2.9.2.jar!/springfox/documentation/swagger/configuration/SwaggerCommonConfiguration.class</file>
-          <file>file://D:/Program Flies/maven_rep/io/springfox/springfox-swagger-common/2.9.2/springfox-swagger-common-2.9.2.jar</file>
-          <file>jar://D:/Program Flies/maven_rep/io/springfox/springfox-swagger2/2.9.2/springfox-swagger2-2.9.2.jar!/springfox/documentation/swagger2/configuration/Swagger2DocumentationConfiguration.class</file>
-          <file>file://D:/Program Flies/maven_rep/io/springfox/springfox-swagger2/2.9.2/springfox-swagger2-2.9.2.jar</file>
-        </fileset>
-      </configuration>
+      <configuration />
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
