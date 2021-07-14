@@ -154,7 +154,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             //2.验价
             BigDecimal payAmount = order.getOrder().getPayAmount();
             BigDecimal payPrice = vo.getPayPrice();
-            if(Math.abs(payAmount.subtract(payPrice).doubleValue())<0.01){
+            if (Math.abs(payAmount.subtract(payPrice).doubleValue()) < 0.01) {
                 //成功
                 //3.保存订单
                 saveOrder(order);
@@ -172,18 +172,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 lockVo.setLocks(locks);
                 //远程锁库存
                 R r = wmsFeignService.orderLockStock(lockVo);
-                if (r.getCode()==0){
+                if (r.getCode() == 0) {
                     //成功
                     responseVo.setOrder(order.getOrder());
-                    rabbitTemplate.convertAndSend("order-event-exchange","order.create.order",order.getOrder());
+                    rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", order.getOrder());
                     return responseVo;
-                }else {
+                } else {
                     //失败
                     //throw new NoStockException(msg);
                     responseVo.setCode(3);
                     return responseVo;
                 }
-            }else {
+            } else {
                 responseVo.setCode(2);
                 return responseVo;
             }
@@ -223,35 +223,42 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     /**
      * 关闭订单
+     *
      * @param entity
      */
     @Override
     public void closeOrder(OrderEntity entity) {
         //查询订单最新状态
         OrderEntity orderEntity = this.getById(entity.getId());
-        if(orderEntity.getStatus()==OrderStatusEnum.CREATE_NEW.getCode()){
+        if (orderEntity.getStatus() == OrderStatusEnum.CREATE_NEW.getCode()) {
             //关闭订单
             OrderEntity update = new OrderEntity();
             update.setId(entity.getId());
             update.setStatus(OrderStatusEnum.CANCLED.getCode());
             this.updateById(update);
             OrderTo orderTo = new OrderTo();
-            BeanUtils.copyProperties(orderEntity,orderTo);
-            try{
+            BeanUtils.copyProperties(orderEntity, orderTo);
+            try {
                 //每一条消息进行日志记录(数据库保存每一条消息的详细信息)
                 //定期扫描数据库将失败的消息再发送一遍
-                rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
-            }catch (Exception e){
+                rabbitTemplate.convertAndSend("order-event-exchange", "order.release.other", orderTo);
+            } catch (Exception e) {
                 //将没法送成功的消息进行重试发送
             }
         }
     }
 
+    /**
+     * 获取订单的支付信息
+     * @param orderSn
+     * @return
+     */
     @Override
     public PayVo getOrderPay(String orderSn) {
         PayVo payVo = new PayVo();
         OrderEntity order = this.getOrderByOrderSn(orderSn);
         List<OrderItemEntity> list = orderItemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", orderSn));
+        payVo.setOut_trade_no(order.getOrderSn());
         //支付宝仅支持小数点后两位,截取位数并向上取值
         BigDecimal bigDecimal = order.getPayAmount().setScale(2, BigDecimal.ROUND_UP);
         payVo.setTotal_amount(bigDecimal.toString());
@@ -267,14 +274,20 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         MemberRespVo memberRespVo = LoginUserInterceptor.loginUser.get();
         IPage<OrderEntity> page = this.page(
                 new Query<OrderEntity>().getPage(params),
-                new QueryWrapper<OrderEntity>().eq("member_id",memberRespVo.getId()).orderByDesc("id")
+                new QueryWrapper<OrderEntity>().eq("member_id", memberRespVo.getId()).orderByDesc("id")
         );
-
+        List<OrderEntity> order_sn = page.getRecords().stream().map(order -> {
+            List<OrderItemEntity> list = orderItemService.list(new QueryWrapper<OrderItemEntity>().eq("order_sn", order.getOrderSn()));
+            order.setItemEntities(list);
+            return order;
+        }).collect(Collectors.toList());
+        page.setRecords(order_sn);
         return new PageUtils(page);
     }
 
     /**
      * 验价方法
+     *
      * @param orderEntity
      * @param itemEntities
      */
@@ -380,8 +393,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         itemEntity.setCouponAmount(new BigDecimal("0"));
         itemEntity.setIntegrationAmount(new BigDecimal("0"));
         //5.积分信息
-        itemEntity.setGiftGrowth(cartItem.getPrice().intValue()*cartItem.getCount());
-        itemEntity.setGiftIntegration(cartItem.getPrice().intValue()*cartItem.getCount());
+        itemEntity.setGiftGrowth(cartItem.getPrice().intValue() * cartItem.getCount());
+        itemEntity.setGiftIntegration(cartItem.getPrice().intValue() * cartItem.getCount());
         //6.订单项价格信息
         //实际金额
         BigDecimal orgin = itemEntity.getSkuPrice().multiply(new BigDecimal(itemEntity.getSkuQuantity().toString()));
