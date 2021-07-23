@@ -32,6 +32,8 @@ public class AlipayTemplate {
     private  String sign_type = "RSA2";
     // 字符编码格式
     private  String charset = "utf-8";
+    //支付超时时间
+    private String timeout = "30m";
     // 支付宝网关； https://openapi.alipaydev.com/gateway.do
     private  String gatewayUrl = "https://openapi.alipaydev.com/gateway.do";
 
@@ -60,6 +62,7 @@ public class AlipayTemplate {
                 + "\"total_amount\":\""+ total_amount +"\","
                 + "\"subject\":\""+ subject +"\","
                 + "\"body\":\""+ body +"\","
+                + "\"timeout_express\":\""+timeout+"\"," //1分钟超时时间
                 + "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"}");
 
         String result = alipayClient.pageExecute(alipayRequest).getBody();

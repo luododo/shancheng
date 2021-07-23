@@ -7,6 +7,7 @@ import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimail.order.constant.OrderConstant;
 import com.atguigu.gulimail.order.entity.OrderItemEntity;
+import com.atguigu.gulimail.order.entity.PaymentInfoEntity;
 import com.atguigu.gulimail.order.enume.OrderStatusEnum;
 import com.atguigu.gulimail.order.feign.CartFeginService;
 import com.atguigu.gulimail.order.feign.MemberFeginService;
@@ -14,6 +15,7 @@ import com.atguigu.gulimail.order.feign.ProductFeignService;
 import com.atguigu.gulimail.order.feign.WmsFeignService;
 import com.atguigu.gulimail.order.interceptor.LoginUserInterceptor;
 import com.atguigu.gulimail.order.service.OrderItemService;
+import com.atguigu.gulimail.order.service.PaymentInfoService;
 import com.atguigu.gulimail.order.to.OrderCreateTo;
 import com.atguigu.gulimail.order.vo.*;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
@@ -76,6 +78,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Autowired
     ThreadPoolExecutor executor;
+
+    @Autowired
+    PaymentInfoService paymentInfoService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -284,6 +289,30 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         page.setRecords(order_sn);
         return new PageUtils(page);
     }
+
+    /**
+     * 处理支付宝异步通知返回结果
+     * @param vo
+     * @return
+     */
+    @Override
+    public String handlePayResult(PayAsyncVo vo) {
+        //1.保存交易流水
+        PaymentInfoEntity infoEntity = new PaymentInfoEntity();
+        infoEntity.setAlipayTradeNo(vo.getTrade_no());
+        infoEntity.setOrderSn(vo.getOut_trade_no());
+        infoEntity.setPaymentStatus(vo.getTrade_status());
+        infoEntity.setCallbackTime(vo.getNotify_time());
+        paymentInfoService.save(infoEntity);
+        //2.修改订单状态
+        if(vo.getTrade_status().equals("TRADE_SUCCESS")||vo.getTrade_status().equals("TRADE_FINISHED")){
+            //支付成功
+            String outTradeNo = vo.getOut_trade_no();
+            this.baseMapper.updateOrderStatus(outTradeNo,OrderStatusEnum.PAYED.getCode());
+        }
+        return "success";
+    }
+
 
     /**
      * 验价方法

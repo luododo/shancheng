@@ -68,4 +68,11 @@ class GulimailOrderApplicationTests {
 		amqpAdmin.declareBinding(binding);
 		log.info("binding:[{}]创建成功","hello-java-binding");
 	}
+
+	@Test
+	void regionCodeTest(){
+		String code = "110101";
+		String code1 = code.substring(0,2);
+		System.out.println(code1);
+	}
 }
