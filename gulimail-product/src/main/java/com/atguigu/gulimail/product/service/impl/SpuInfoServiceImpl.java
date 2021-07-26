@@ -245,7 +245,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }
         //2.封装数据
         Map<Long, Boolean> finalSotckMap = sotckMap;
-        List<SkuEsModel> uoProducts = skuInfoEntities.stream().map(sku -> {
+        List<SkuEsModel> upProducts = skuInfoEntities.stream().map(sku -> {
             SkuEsModel skuEsModel = new SkuEsModel();
             BeanUtils.copyProperties(sku, skuEsModel);
             skuEsModel.setSkuPrice(sku.getPrice());
@@ -267,7 +267,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return skuEsModel;
         }).collect(Collectors.toList());
         //发送至es进行保存
-        R r = searchFeignService.productStatusUp(uoProducts);
+        R r = searchFeignService.productStatusUp(upProducts);
         if (r.getCode() == 0) {
             //成功
             //修改spu状态

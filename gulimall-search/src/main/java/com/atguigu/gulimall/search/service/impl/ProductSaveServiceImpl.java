@@ -28,7 +28,7 @@ public class ProductSaveServiceImpl implements ProductSaveService {
     @Override
     public boolean productStatusUp(List<SkuEsModel> skuEsModels) throws IOException {
         //保存到es
-        //1.给es建立索引product
+        //1.给es建立索引product(在Kibana中操作!)
         //2.给es保存数据
         BulkRequest bulkRequest = new BulkRequest();
         for (SkuEsModel model : skuEsModels) {

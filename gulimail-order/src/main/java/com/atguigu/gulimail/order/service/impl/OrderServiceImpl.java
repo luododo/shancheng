@@ -52,7 +52,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 @Service("orderService")
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
-    //将页面传递过来的数据进行共享
+    //将页面传递过来的数据在同一个线程内进行共享
     private ThreadLocal<OrderSubmitVo> submitVoThreadLocal = new ThreadLocal<>();
 
     @Autowired
@@ -92,6 +92,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return new PageUtils(page);
     }
 
+    /**
+     * 确认订单
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @Override
     public OrderConfirmVo confirmOrder() throws ExecutionException, InterruptedException {
         OrderConfirmVo confirmVo = new OrderConfirmVo();
@@ -125,7 +131,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         //3.查询用户积分
         Integer integration = memberRespVo.getIntegration();
         confirmVo.setIntegration(integration);
-        //4.防重复提交令牌
+        //4.防重复令牌提交
         String token = UUID.randomUUID().toString().replace("-", "");
         redisTemplate.opsForValue().set(OrderConstant.USER_ORDER_TOKEN_PREFIX + memberRespVo.getId(), token, 30, TimeUnit.MINUTES);
         confirmVo.setToken(token);
@@ -133,6 +139,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return confirmVo;
     }
 
+    /**
+     * 提交订单
+     * @param vo
+     * @return
+     */
     @Transactional
     @Override
     public SubmitOrderResponseVo submitOrder(OrderSubmitVo vo) {
@@ -141,7 +152,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         MemberRespVo memberRespVo = LoginUserInterceptor.loginUser.get();
         responseVo.setCode(0);
         //1.验证令牌(令牌的对比和删除必须保证原子性)
-        //如果调用get方法与传入的val相同，调用del方法，不相同返回0;0失败，1成功
+        //如果调用get方法与传入的val相同，调用del方法，不相同返回0(0失败，1成功)
         String script = "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end";
         String orderToken = vo.getOrderToken();
         //使用Lua脚本
@@ -178,7 +189,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 //远程锁库存
                 R r = wmsFeignService.orderLockStock(lockVo);
                 if (r.getCode() == 0) {
-                    //成功
+                    //成功(rebbitMQ消息通知)
                     responseVo.setOrder(order.getOrder());
                     rabbitTemplate.convertAndSend("order-event-exchange", "order.create.order", order.getOrder());
                     return responseVo;
@@ -202,7 +213,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return entity;
     }
 
-
+    /**
+     * 创建订单
+     * @return
+     */
     private OrderCreateTo createOrder() {
         OrderCreateTo orderCreateTo = new OrderCreateTo();
         //生成订单号
@@ -218,6 +232,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return orderCreateTo;
     }
 
+    /**
+     * 保存订单
+     * @param order
+     */
     private void saveOrder(OrderCreateTo order) {
         OrderEntity orderEntity = order.getOrder();
         orderEntity.setModifyTime(new Date());
@@ -345,6 +363,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setIntegration(integration);
     }
 
+    /**
+     * 构建订单
+     * @param orderSn
+     * @return
+     */
     private OrderEntity buildOrder(String orderSn) {
         MemberRespVo memberRespVo = LoginUserInterceptor.loginUser.get();
         OrderEntity entity = new OrderEntity();
@@ -374,7 +397,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     /**
      * 构建所有订单项
-     *
      * @return
      */
     private List<OrderItemEntity> buildOrderItems(String orderSn) {
@@ -394,7 +416,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     /**
      * 构建某一个订单项
-     *
      * @return
      */
     private OrderItemEntity buildOrderItem(OrderItemVo cartItem) {
