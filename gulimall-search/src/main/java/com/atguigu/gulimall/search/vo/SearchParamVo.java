@@ -29,10 +29,10 @@ public class SearchParamVo {
      * 品牌(多选)
      * 商品属性(多选)
      */
-    private Integer hasStock;
+    private Integer hasStock = 1;
     private String skuPrice;
     private List<Long> brandId;
     private List<String> attrs;
     //分页
-    private Integer pageNum;
+    private Integer pageNum = 1;
 }
