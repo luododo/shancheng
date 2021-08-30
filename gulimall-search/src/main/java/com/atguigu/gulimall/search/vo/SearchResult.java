@@ -19,10 +19,11 @@ public class SearchResult {
 
     private List<BrandVo> brands;//品牌信息
     private List<AttrVo> attrs;//属性信息
-    private List<AttrVo> catalogs;//分类信息
+    private List<CatalogVo> catalogs;//分类信息
     /**
      * 品牌内部类
      */
+    @Data
     public static class BrandVo{
         private Long brandId;
         private String brandName;
@@ -31,14 +32,16 @@ public class SearchResult {
     /**
      * 属性内部类
      */
+    @Data
     public static class AttrVo{
         private Long attrId;
         private String attrName;
         private List<String> attrValue;
     }
     /**
-     * 属性内部类
+     * 分类内部类
      */
+    @Data
     public static class CatalogVo {
         private Long catalogId;
         private String catalogName;
