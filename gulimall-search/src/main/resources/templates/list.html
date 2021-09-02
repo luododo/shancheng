@@ -1045,7 +1045,7 @@
                 <div class="filter">
                     <!--综合排序-->
                     <div class="filter_top">
-                        <div class="filter_top_left" th:with="p = ${param.sort}">
+                        <div class="filter_top_left" th:with="p = ${param.sort}, priceRange = ${param.skuPrice}">
                             <!--回显
                             th:class="${(!#strings.isEmpty(p) && #strings.startsWith(p,'hotScore') && #strings.endsWith(p,'desc'))?'sort_a desc':'sort_a'}"
                             th:class="${(!#strings.isEmpty(p) && #strings.startsWith(p,'saleCount') && #strings.endsWith(p,'desc'))?'sort_a desc':'sort_a'}"
@@ -1065,7 +1065,9 @@
                                sort="skuPrice"  >价格 [[${(!#strings.isEmpty(p) && #strings.startsWith(p,'skuPrice') && #strings.endsWith(p,'desc'))?'↓':'↑'}]]</a>
                             <a href="/static/search/#">评论分</a>
                             <a href="/static/search/#">上架时间</a>
-                            <input style="width: 100px;margin-left: 30px;"> - <input style="width: 100px;"> <button>确定</button>
+                            <input id="skuPriceFrom" type="number" style="width: 100px;margin-left: 30px;" th:value="${#strings.isEmpty(priceRange)?'':#strings.substringBefore(priceRange,'_')}"> -
+                            <input id="skuPriceTo" type="number" style="width: 100px;" th:value="${#strings.isEmpty(priceRange)?'':#strings.substringAfter(priceRange,'_')}">
+                            <button id="skuPriceBtn">确定</button>
                         </div>
                         <div class="filter_top_right">
                             <span class="fp-text">
@@ -2088,6 +2090,15 @@
             $(ele).text(text);
         }
     }
+    
+    //商品价格区间
+    $("#skuPriceBtn").click(function () {
+        //1.拼上价格区间的查询条件
+        var from = $("#skuPriceFrom").val();
+        var to = $("#skuPriceTo").val();
+        var query = from + "_" + to;
+        location.href = replaceAndAddParamVal(location.href,"skuPrice",query);
+    });
 </script>
 </body>
 </html>
