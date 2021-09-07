@@ -1,10 +1,14 @@
 package com.atguigu.gulimall.search.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.to.es.SkuEsModel;
+import com.atguigu.common.utils.R;
 import com.atguigu.gulimall.search.config.GulimallElasticSearchConfig;
 import com.atguigu.gulimall.search.constant.EsConstant;
+import com.atguigu.gulimall.search.feign.ProductFeignService;
 import com.atguigu.gulimall.search.service.MallSearchService;
+import com.atguigu.gulimall.search.vo.AttrResponseVo;
 import com.atguigu.gulimall.search.vo.SearchParamVo;
 import com.atguigu.gulimall.search.vo.SearchResult;
 import org.apache.lucene.search.join.ScoreMode;
@@ -33,6 +37,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +48,8 @@ import java.util.stream.Collectors;
 public class MallSearchServiceImpl implements MallSearchService {
     @Autowired
     private RestHighLevelClient client;
+    @Autowired
+    ProductFeignService productFeignService;
 
     @Override
     public SearchResult search(SearchParamVo paramVo) {
@@ -107,18 +116,20 @@ public class MallSearchServiceImpl implements MallSearchService {
             //1_500/_500/500_
             RangeQueryBuilder rangeQuery = QueryBuilders.rangeQuery("skuPrice");
             String[] s = paramVo.getSkuPrice().split("_");
+            BigDecimal bigDecimal1 = new BigDecimal(s[0]);
             if (s.length == 2) {
                 //gte大于等于，lte小于等于，gt大于，lt小于
                 //区间
-                rangeQuery.gte(s[0]).lte(s[1]);
+                BigDecimal bigDecimal2 = new BigDecimal(s[1]);
+                rangeQuery.gte(bigDecimal1).lte(bigDecimal2);
             } else if (s.length == 1) {
                 //大于
                 if (paramVo.getSkuPrice().startsWith("_")) {
-                    rangeQuery.lte(s[0]);
+                    rangeQuery.lte(bigDecimal1);
                 }
                 //小于
                 if (paramVo.getSkuPrice().endsWith("_")) {
-                    rangeQuery.gte(s[0]);
+                    rangeQuery.gte(bigDecimal1);
                 }
             }
             boolQuery.filter(rangeQuery);
@@ -269,6 +280,37 @@ public class MallSearchServiceImpl implements MallSearchService {
             pageNavs.add(i);
         }
         result.setPageNavs(pageNavs);
+
+        //6.构建面包屑导航
+        if (paramVo.getAttrs() != null && paramVo.getAttrs().size() > 0) {
+            List<SearchResult.NavVo> collect = paramVo.getAttrs().stream().map(attr -> {
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                //分析每个attr的参数值
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+                if (r.getCode() == 0) {
+                    AttrResponseVo attrs = r.getData2("attr", new TypeReference<AttrResponseVo>() {
+                    });
+                    navVo.setNavName(attrs.getAttrName());
+                } else {
+                    navVo.setNavName(s[0]);
+                }
+                //2.取消了面包屑之后,跳转的位置(将请求地址的url替换,置空)
+                //编码
+                String encode = null;
+                try {
+                    encode = URLEncoder.encode(attr, "UTF-8");
+                    encode = encode.replace("+","%20");//对空格特殊处理
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String replace = paramVo.get_queryString().replace("&attrs=" + encode, "");
+                navVo.setLink("http://search.gulimall.com/list.html?" + replace);
+                return navVo;
+            }).collect(Collectors.toList());
+            result.setNavs(collect);
+        }
         return result;
     }
 }

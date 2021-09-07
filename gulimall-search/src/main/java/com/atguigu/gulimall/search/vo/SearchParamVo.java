@@ -31,8 +31,12 @@ public class SearchParamVo {
      */
     private Integer hasStock = 1;
     private String skuPrice;
+    private Integer skuPrice1;
+    private Integer skuPrice2;
     private List<Long> brandId;
     private List<String> attrs;
     //分页
     private Integer pageNum = 1;
+
+    private String _queryString;//原生查询条件
 }

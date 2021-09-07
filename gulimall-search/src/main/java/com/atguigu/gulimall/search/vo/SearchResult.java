@@ -21,6 +21,18 @@ public class SearchResult {
     private List<BrandVo> brands;//品牌信息
     private List<AttrVo> attrs;//属性信息
     private List<CatalogVo> catalogs;//分类信息
+    private List<NavVo> navs;
+
+
+    /**
+     *面包屑导航静态内部类
+     */
+    @Data
+    public static class NavVo{
+        private String navName;
+        private String navValue;
+        private String link;
+    }
     /**
      * 品牌内部类
      */
