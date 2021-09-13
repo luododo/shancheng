@@ -2,7 +2,10 @@ package com.atguigu.gulimail.product.service.impl;
 
 import com.atguigu.gulimail.product.service.CategoryBrandRelationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -47,4 +50,9 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
         }
     }
 
+    @Cacheable(value = "brand",key = "'brandinf:'+#root.args[0]")
+    @Override
+    public List<BrandEntity> getBrandsByIds(List<Long> brandIds) {
+        return  baseMapper.selectList(new QueryWrapper<BrandEntity>().in("brand_id", brandIds));
+    }
 }

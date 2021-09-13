@@ -3,12 +3,19 @@ package com.atguigu.gulimall.search.feign;
 
 import com.atguigu.common.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @FeignClient("gulimall-product")
 public interface ProductFeignService {
     @RequestMapping(value = "/product/attr/info/{attrId}",method = RequestMethod.GET)
-    public R attrInfo(@PathVariable("attrId") Long attrId);
+    R attrInfo(@PathVariable("attrId") Long attrId);
+
+    @GetMapping("/product/brand/infos")
+    R brandsInfo(@RequestParam("brandIds") List<Long> brandIds);
+
+    @RequestMapping("/product/brand/info/{brandId}")
+    //@RequiresPermissions("product:brand:info")
+    R info(@PathVariable("brandId") Long brandId);
 }
