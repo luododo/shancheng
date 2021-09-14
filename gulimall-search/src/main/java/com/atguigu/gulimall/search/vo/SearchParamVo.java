@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class SearchParamVo {
     //全文检索
-    private String keyWord;
+    private String keyword;
 
     private Long catalog3Id;
 

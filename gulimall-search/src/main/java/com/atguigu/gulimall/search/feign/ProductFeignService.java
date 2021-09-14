@@ -14,8 +14,4 @@ public interface ProductFeignService {
 
     @GetMapping("/product/brand/infos")
     R brandsInfo(@RequestParam("brandIds") List<Long> brandIds);
-
-    @RequestMapping("/product/brand/info/{brandId}")
-    //@RequiresPermissions("product:brand:info")
-    R info(@PathVariable("brandId") Long brandId);
 }

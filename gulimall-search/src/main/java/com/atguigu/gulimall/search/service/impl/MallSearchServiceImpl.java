@@ -84,8 +84,8 @@ public class MallSearchServiceImpl implements MallSearchService {
         //1.构建bool - query
         BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
         //1.1 must - 模糊匹配
-        if (!StringUtils.isEmpty(paramVo.getKeyWord())) {
-            boolQuery.must(QueryBuilders.matchQuery("skuTitle", paramVo.getKeyWord()));
+        if (!StringUtils.isEmpty(paramVo.getKeyword())) {
+            boolQuery.must(QueryBuilders.matchQuery("skuTitle", paramVo.getKeyword()));
         }
         //1.2 bool - fitler 按照三级分类id查询
         if (paramVo.getCatalog3Id() != null) {
@@ -150,7 +150,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         builder.from((paramVo.getPageNum() - 1) * EsConstant.PRODUCT_PAGESIZE);
         builder.size(EsConstant.PRODUCT_PAGESIZE);
         //2.3 高亮
-        if (!StringUtils.isEmpty(paramVo.getKeyWord())) {
+        if (!StringUtils.isEmpty(paramVo.getKeyword())) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
             highlightBuilder.field("skuTitle");
             highlightBuilder.preTags("<b style='color:red'>");
@@ -200,7 +200,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             for (SearchHit hit : hits.getHits()) {
                 String sourceAsString = hit.getSourceAsString();
                 SkuEsModel skuEsModel = JSON.parseObject(sourceAsString, SkuEsModel.class);
-                if (!StringUtils.isEmpty(paramVo.getKeyWord())) {
+                if (!StringUtils.isEmpty(paramVo.getKeyword())) {
                     //设置高亮内容
                     HighlightField skuTitle = hit.getHighlightFields().get("skuTitle");
                     String string = skuTitle.getFragments()[0].string();
@@ -248,7 +248,6 @@ public class MallSearchServiceImpl implements MallSearchService {
             brandVo.setBrandImg(brandImg);
             brandVos.add(brandVo);
         }
-
         result.setBrands(brandVos);
         //4.当前所有商品涉及到的所有分类信息
         ParsedLongTerms catalog_agg = response.getAggregations().get("catalog_agg");
@@ -335,7 +334,7 @@ public class MallSearchServiceImpl implements MallSearchService {
         try {
             //编码
             encode = URLEncoder.encode(value, "UTF-8");
-            encode = encode.replace("+", "%20");//对空格特殊处理
+            encode = encode.replace("+", "%20");//对空格特殊处理(将空格变为%20)
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
