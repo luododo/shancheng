@@ -17,9 +17,10 @@ public class SeckillSkuScheduled {
     @Autowired
     SeckillService seckillService;
 
-    @Scheduled(cron = "0 0 3 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     public void upSeckillSkuLatest3Days(){
         //1.重复上架无需处理
+        log.info("上架秒杀商品信息");
         seckillService.upSeckillSkuLatest3Days();
     }
 }

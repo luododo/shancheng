@@ -2,6 +2,7 @@ package com.atguigu.gulimail.coupon.service.impl;
 
 import com.atguigu.gulimail.coupon.entity.SeckillSkuRelationEntity;
 import com.atguigu.gulimail.coupon.service.SeckillSkuRelationService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,7 +24,7 @@ import com.atguigu.gulimail.coupon.dao.SeckillSessionDao;
 import com.atguigu.gulimail.coupon.entity.SeckillSessionEntity;
 import com.atguigu.gulimail.coupon.service.SeckillSessionService;
 
-
+@Slf4j
 @Service("seckillSessionService")
 public class SeckillSessionServiceImpl extends ServiceImpl<SeckillSessionDao, SeckillSessionEntity> implements SeckillSessionService {
 
@@ -61,20 +61,22 @@ public class SeckillSessionServiceImpl extends ServiceImpl<SeckillSessionDao, Se
     }
 
     //计算最近三天的时间
-    private LocalDateTime startTime() {
+    private String startTime() {
         LocalDate now = LocalDate.now();
         LocalTime min = LocalTime.MIN;
         LocalDateTime start = LocalDateTime.of(now, min);
-        start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return start;
+        String startTime = start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        log.info("start:"+startTime);
+        return startTime;
     }
 
-    private LocalDateTime endTime() {
+    private String endTime() {
         LocalDate now = LocalDate.now();
-        LocalDate localDate = now.plusDays(2);
+        LocalDate localDate = now.plusDays(3);
         LocalTime max = LocalTime.MIN;
         LocalDateTime end = LocalDateTime.of(localDate, max);
-        end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        return end;
+        String endTime = end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        log.info("end:"+endTime);
+        return endTime;
     }
 }

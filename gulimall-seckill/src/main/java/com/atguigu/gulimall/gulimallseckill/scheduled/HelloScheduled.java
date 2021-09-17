@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 public class HelloScheduled {
 
-    @Async
-    @Scheduled(cron = "0/3 * * * * ?")
-    public void hello(){
-
-        log.info("hello...");
-    }
+//    @Async
+//    @Scheduled(cron = "0/3 * * * * ?")
+//    public void hello(){
+//
+//        log.info("hello...");
+//    }
 }
