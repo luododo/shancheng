@@ -1,8 +1,10 @@
 package com.atguigu.gulimail.coupon.service.impl;
 
+import com.atguigu.gulimail.coupon.entity.SeckillSkuRelationEntity;
+import com.atguigu.gulimail.coupon.service.SeckillSkuRelationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -10,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,6 +28,9 @@ import com.atguigu.gulimail.coupon.service.SeckillSessionService;
 @Service("seckillSessionService")
 public class SeckillSessionServiceImpl extends ServiceImpl<SeckillSessionDao, SeckillSessionEntity> implements SeckillSessionService {
 
+    @Autowired
+    SeckillSkuRelationService seckillSkuRelationService;
+
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SeckillSessionEntity> page = this.page(
@@ -35,10 +41,23 @@ public class SeckillSessionServiceImpl extends ServiceImpl<SeckillSessionDao, Se
         return new PageUtils(page);
     }
 
+    //查询每场活动关联了多少秒杀商品
     @Override
     public List<SeckillSessionEntity> getLates3DaySession() {
+        //查询三天内的秒杀活动
         List<SeckillSessionEntity> list = this.list(new QueryWrapper<SeckillSessionEntity>().between("start_time", startTime(), endTime()));
-        return list;
+        if(list!=null&&list.size()>0){
+            List<SeckillSessionEntity> collect = list.stream().map(session -> {
+                Long id = session.getId();
+                //查询并设置每场活动关联的秒杀商品
+                List<SeckillSkuRelationEntity> relationEntities = seckillSkuRelationService.list(new QueryWrapper<SeckillSkuRelationEntity>().eq("promotion_session_id", id));
+                session.setRelationSkus(relationEntities);
+                return session;
+            }).collect(Collectors.toList());
+            return collect;
+        }else {
+            return null;
+        }
     }
 
     //计算最近三天的时间
