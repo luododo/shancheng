@@ -14,7 +14,6 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -67,8 +66,8 @@ public class SeckillServiceImpl implements SeckillService {
             if (time >= start && time <= end) {
                 //2.获取这个秒杀场次需要的所有商品信息
                 List<String> range = stringRedisTemplate.opsForList().range(key, -100, 100);
-                BoundHashOperations<String, Object, Object> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
-                List<Object> list = hashOps.multiGet(Collections.singleton(range));
+                BoundHashOperations<String, String, String> hashOps = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+                List<String> list = hashOps.multiGet(range);
                 if (list != null) {
                     List<SeckillSkuRedisTo> collect = list.stream().map(item -> {
                         SeckillSkuRedisTo redis = JSON.parseObject((String) item, SeckillSkuRedisTo.class);
@@ -80,6 +79,16 @@ public class SeckillServiceImpl implements SeckillService {
                 break;
             }
         }
+        return null;
+    }
+
+    /**
+     * 查询当前商品是否参与秒杀
+     * @param skuId
+     * @return
+     */
+    @Override
+    public SeckillSkuRedisTo getSkuSeckillInfo(Long skuId) {
 
 
         return null;

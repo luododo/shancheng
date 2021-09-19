@@ -74,3 +74,8 @@ spring:
           predicates:
             - Host=search.gulimall.com
 
+        - id: gulimall_seckill_route
+          uri: lb://gulimall-seckill
+          predicates:
+            - Host=seckill.gulimall.com
+

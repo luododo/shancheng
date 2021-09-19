@@ -130,6 +130,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             List<SkuImagesEntity> images = imagesService.getImagesBySkuId(skuId);
             skuItemVo.setImagesEntites(images);
         }, executor);
+
         //等待所有任务都完成
         CompletableFuture.allOf(saleFuture,descFuture,baseFuture,imgFuture).get();
         return skuItemVo;
