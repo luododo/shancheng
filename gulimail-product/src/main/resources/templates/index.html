@@ -585,10 +585,14 @@
       window.location.href="http://search.gulimall.com/list.html?keyword="+keyword;
   }
 
+  function to_href(skuId){
+      location.href = "http://item.gulimall.com/"+skuId+".html"
+  }
+
   $.get("http://seckill.gulimall.com/currentSeckillSkus",function (resp) {
       if(resp.data.length > 0) {
           resp.data.forEach(function(item){
-              $("<li></li>")
+              $("<li onclick='to_href("+item.skuId+")'></li>")
                   .append($("<img style='width: 130px;height: 130px' src='"+item.skuInfoVo.skuDefaultImg+"'/>"))
                   .append($("<p>"+item.skuInfoVo.skuTitle+"</p>"))
                   .append($("<span>"+item.seckillPrice+"</span>"))

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Service
+@EnableScheduling
 public class SeckillSkuScheduled {
     @Autowired
     SeckillService seckillService;

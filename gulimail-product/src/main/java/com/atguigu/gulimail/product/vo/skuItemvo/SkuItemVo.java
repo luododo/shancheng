@@ -3,6 +3,7 @@ package com.atguigu.gulimail.product.vo.skuItemvo;
 import com.atguigu.gulimail.product.entity.SkuImagesEntity;
 import com.atguigu.gulimail.product.entity.SkuInfoEntity;
 import com.atguigu.gulimail.product.entity.SpuInfoDescEntity;
+import com.atguigu.gulimail.product.vo.spvsavevo.SeckillInfoVo;
 import lombok.Data;
 import lombok.ToString;
 
@@ -25,5 +26,8 @@ public class SkuItemVo {
 
     //5.规格参数
     List<SpuItemAttrGroupVo> groupAttrs;
+
+    //6.当前商品的秒杀优惠信息
+    SeckillInfoVo seckillInfo;
 
 }

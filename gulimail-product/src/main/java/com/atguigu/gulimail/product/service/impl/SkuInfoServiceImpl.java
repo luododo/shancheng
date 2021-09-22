@@ -1,11 +1,15 @@
 package com.atguigu.gulimail.product.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.utils.R;
 import com.atguigu.gulimail.product.entity.SkuImagesEntity;
 import com.atguigu.gulimail.product.entity.SpuInfoDescEntity;
+import com.atguigu.gulimail.product.feign.SeckillFeginService;
 import com.atguigu.gulimail.product.service.*;
 import com.atguigu.gulimail.product.vo.skuItemvo.SkuItemSaleAttrsVo;
 import com.atguigu.gulimail.product.vo.skuItemvo.SkuItemVo;
 import com.atguigu.gulimail.product.vo.skuItemvo.SpuItemAttrGroupVo;
+import com.atguigu.gulimail.product.vo.spvsavevo.SeckillInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +42,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     AttrGroupService attrGroupService;
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+    @Autowired
+    SeckillFeginService seckillFeginService;
     @Autowired
     ThreadPoolExecutor executor;
 
@@ -130,9 +136,17 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
             List<SkuImagesEntity> images = imagesService.getImagesBySkuId(skuId);
             skuItemVo.setImagesEntites(images);
         }, executor);
-
+        //查询当前商品是否是秒杀商品
+        CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
+            R seckillInfo = seckillFeginService.getSkuSeckillInfo(skuId);
+            if (seckillInfo.getCode() == 0) {
+                SeckillInfoVo seckillInfoVo = seckillInfo.getData(new TypeReference<SeckillInfoVo>() {
+                });
+                skuItemVo.setSeckillInfo(seckillInfoVo);
+            }
+        },executor);
         //等待所有任务都完成
-        CompletableFuture.allOf(saleFuture,descFuture,baseFuture,imgFuture).get();
+        CompletableFuture.allOf(saleFuture,descFuture,baseFuture,imgFuture,seckillFuture).get();
         return skuItemVo;
     }
 }
