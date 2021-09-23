@@ -37,7 +37,7 @@ public class SeckillSkuRedisTo {
     /**
      * 每人限购数量
      */
-    private BigDecimal seckillLimit;
+    private int seckillLimit;
     /**
      * 排序
      */
