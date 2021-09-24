@@ -2,6 +2,7 @@ package com.atguigu.gulimall.gulimallseckill.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.atguigu.common.to.mq.SeckillOrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimall.gulimallseckill.feign.CouponFeignService;
@@ -14,6 +15,7 @@ import com.atguigu.gulimall.gulimallseckill.vo.SkuInfoVo;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
@@ -37,6 +39,8 @@ public class SeckillServiceImpl implements SeckillService {
     StringRedisTemplate stringRedisTemplate;
     @Autowired
     RedissonClient redissonClient;
+    @Autowired
+    RabbitTemplate rabbitTemplate;
 
     private final String SESSIONS_CACHE_PREFIX = "seckill:sessions:";
     private final String SKUKILL_CACHE_PREFIX = "seckill:skus";
@@ -169,6 +173,15 @@ public class SeckillServiceImpl implements SeckillService {
                                 boolean b = semaphore.tryAcquire(num, 300, TimeUnit.MILLISECONDS);
                                 //秒杀成功，快速下单,返回订单号
                                 String timeId = IdWorker.getTimeId();
+                                //4.向队列发送消息
+                                SeckillOrderTo orderTo = new SeckillOrderTo();
+                                orderTo.setOrderSn(timeId);
+                                orderTo.setMemberId(respVo.getId());
+                                orderTo.setNum(num);
+                                orderTo.setPromotionSessionId(redisTo.getPromotionSessionId());
+                                orderTo.setSkuId(redisTo.getSkuId());
+                                orderTo.setSeckillPrice(redisTo.getSeckillPrice());
+                                rabbitTemplate.convertAndSend("order-event-exchange","order.seckill.order",orderTo);
                                 return timeId;
                             } catch (InterruptedException e) {
                                 return null;

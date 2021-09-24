@@ -43,11 +43,11 @@ public class SeckillSkuRedisTo {
      */
     private Integer seckillSort;
 
-    //sku的详细信息
-    private SkuInfoVo skuInfoVo;
-
     private Long startTime;
 
     private Long endTime;
+
+    //sku的详细信息
+    private SkuInfoVo skuInfoVo;
 
 }

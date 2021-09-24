@@ -36,6 +36,12 @@ public class MyMQConfig {
     }
 
     @Bean
+    //监听秒杀业务队列
+    public Queue orderSeckillOrderQueue(){
+        return new Queue("order.seckill.order.queue",true,false,false);
+    }
+
+    @Bean
     public Exchange orderEventExchange() {
         return new TopicExchange("order-event-exchange", true, false);
     }
@@ -53,5 +59,11 @@ public class MyMQConfig {
     @Bean
     public Binding orderReleaseOtherBingding() {
         return new Binding("stock.release.stock.queue", Binding.DestinationType.QUEUE, "order-event-exchange", "order.release.other.#", null);
+    }
+
+    @Bean
+    //秒杀业务绑定关系
+    public Binding orderSeckillOrderQueueBinding(){
+        return new Binding("order.seckill.order.queue",Binding.DestinationType.QUEUE,"order-event-exchange","order.seckill.order",null);
     }
 }

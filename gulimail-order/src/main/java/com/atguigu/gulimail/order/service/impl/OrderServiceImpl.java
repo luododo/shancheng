@@ -3,6 +3,7 @@ package com.atguigu.gulimail.order.service.impl;
 import com.alibaba.fastjson.TypeReference;
 import com.atguigu.common.exception.NoStockException;
 import com.atguigu.common.to.mq.OrderTo;
+import com.atguigu.common.to.mq.SeckillOrderTo;
 import com.atguigu.common.utils.R;
 import com.atguigu.common.vo.MemberRespVo;
 import com.atguigu.gulimail.order.constant.OrderConstant;
@@ -331,7 +332,6 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         return "success";
     }
 
-
     /**
      * 验价方法
      *
@@ -396,6 +396,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     /**
+     * 创建秒杀订单
+     * @param orderTo
+     */
+    @Override
+    public void createSeckillOrder(SeckillOrderTo orderTo) {
+        OrderEntity orderEntity = new OrderEntity();
+    }
+
+    /**
      * 构建所有订单项
      * @return
      */
@@ -452,4 +461,5 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         itemEntity.setRealAmount(subtract);
         return itemEntity;
     }
+
 }
