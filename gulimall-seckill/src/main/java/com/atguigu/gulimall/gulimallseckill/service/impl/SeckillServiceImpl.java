@@ -169,23 +169,22 @@ public class SeckillServiceImpl implements SeckillService {
                             //成功表示用户第一次购买
                             //3.获取信号量tryAcquire()非阻塞方法
                             RSemaphore semaphore = redissonClient.getSemaphore(SKU_STOCK_SEMAPHORE + randomCode);
-                            try {
-                                boolean b = semaphore.tryAcquire(num, 300, TimeUnit.MILLISECONDS);
-                                //秒杀成功，快速下单,返回订单号
-                                String timeId = IdWorker.getTimeId();
-                                //4.向队列发送消息
-                                SeckillOrderTo orderTo = new SeckillOrderTo();
-                                orderTo.setOrderSn(timeId);
-                                orderTo.setMemberId(respVo.getId());
-                                orderTo.setNum(num);
-                                orderTo.setPromotionSessionId(redisTo.getPromotionSessionId());
-                                orderTo.setSkuId(redisTo.getSkuId());
-                                orderTo.setSeckillPrice(redisTo.getSeckillPrice());
-                                rabbitTemplate.convertAndSend("order-event-exchange","order.seckill.order",orderTo);
-                                return timeId;
-                            } catch (InterruptedException e) {
+                                boolean b = semaphore.tryAcquire(num);
+                                if(b){
+                                    //秒杀成功，快速下单,返回订单号
+                                    String timeId = IdWorker.getTimeId();
+                                    //4.向队列发送消息
+                                    SeckillOrderTo orderTo = new SeckillOrderTo();
+                                    orderTo.setOrderSn(timeId);
+                                    orderTo.setMemberId(respVo.getId());
+                                    orderTo.setNum(num);
+                                    orderTo.setPromotionSessionId(redisTo.getPromotionSessionId());
+                                    orderTo.setSkuId(redisTo.getSkuId());
+                                    orderTo.setSeckillPrice(redisTo.getSeckillPrice());
+                                    rabbitTemplate.convertAndSend("order-event-exchange","order.seckill.order",orderTo);
+                                    return timeId;
+                                }
                                 return null;
-                            }
                         }else{
                             //用户已经购买
                             return null;

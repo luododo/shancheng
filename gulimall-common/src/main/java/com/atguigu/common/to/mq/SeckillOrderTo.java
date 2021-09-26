@@ -2,14 +2,15 @@ package com.atguigu.common.to.mq;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
-public class SeckillOrderTo {
+public class SeckillOrderTo{
     /**
      * 订单号
      */
-    private String OrderSn;
+    private String orderSn;
     /**
      * 活动场次id
      */
@@ -26,7 +27,7 @@ public class SeckillOrderTo {
     /**
      * 秒杀数量
      */
-    private int num;
+    private Integer num;
     /**
      * 会员id
      */

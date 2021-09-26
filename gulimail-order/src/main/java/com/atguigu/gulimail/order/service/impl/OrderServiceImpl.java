@@ -397,11 +397,23 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     /**
      * 创建秒杀订单
-     * @param orderTo
+     * @param seckillOrder
      */
     @Override
-    public void createSeckillOrder(SeckillOrderTo orderTo) {
+    public void createSeckillOrder(SeckillOrderTo seckillOrder) {
         OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(seckillOrder.getOrderSn());
+        orderEntity.setMemberId(seckillOrder.getMemberId());
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+        BigDecimal multiply = seckillOrder.getSeckillPrice().multiply(new BigDecimal("" + seckillOrder.getNum()));
+        orderEntity.setPayAmount(multiply);
+        this.save(orderEntity);
+        //保存订单项信息
+        OrderItemEntity itemEntity = new OrderItemEntity();
+        itemEntity.setOrderSn(seckillOrder.getOrderSn());
+        itemEntity.setRealAmount(multiply);
+        itemEntity.setSkuQuantity(seckillOrder.getNum());
+        orderItemService.save(itemEntity);
     }
 
     /**
