@@ -67,9 +67,11 @@
         <div class="w" id="result">
             <div class="m succeed-box">
                 <div th:if="${orderSn != null}" class="mc success-cont">
-                    <h1>恭喜,秒杀成功,订单号[[${orderSn}]]</h1>
-                    <h2>正在准备订单</h2>
-                    <a th:href="${'http://order.gulimall.com/payOrder?orderSn='+orderSn}">去支付</a>
+                    <h1>恭喜,秒杀成功!订单号:[[${orderSn}]]</h1>
+                    <h2>正在准备订单, <a style="color: red" th:href="${'http://order.gulimall.com/payOrder?orderSn='+orderSn}">去支付</a></h2>
+                    </div>
+                <div th:if="${orderSn == null}">
+                    <h1>没有秒杀到商品，请重试</h1>
                 </div>
             </div>
         </div>
