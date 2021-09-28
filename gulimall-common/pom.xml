@@ -94,7 +94,10 @@
             <artifactId>jetty-util</artifactId>
             <version>9.3.7.v20160115</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
     </dependencies>
 
     <!-- 版本管理,管理所有springcloud-alibaba组件-->

@@ -202,6 +202,7 @@ public class SeckillServiceImpl implements SeckillService {
     }
 
     private void saveSessionInfos(List<SeckillSessionsWithSkus> sessions) {
+        if(sessions!=null)
         sessions.stream().forEach(session -> {
             Long startTime = session.getStartTime().getTime();
             Long endTime = session.getEndTime().getTime();
@@ -218,6 +219,7 @@ public class SeckillServiceImpl implements SeckillService {
 
     private void saveSessionSkuInfos(List<SeckillSessionsWithSkus> sessions) {
         BoundHashOperations<String, Object, Object> ops = stringRedisTemplate.boundHashOps(SKUKILL_CACHE_PREFIX);
+        if (sessions!=null)
         sessions.stream().forEach(session -> {
             //1.随机码(防止攻击)
             String token = UUID.randomUUID().toString().replace("-", "");
