@@ -4,6 +4,7 @@ package com.atguigu.common.exception;
 public enum BizCodeEnume {
     VAILD_EXCEPTION(10001,"参数格式校验失败"),
     SMS_CODE_EXCEPTION(10002,"发送验证码太频繁,请稍后再试"),
+    TO_MANY_REQUEST(10003,"请求流量过大"),
     UNKNOW_EXCEPTION(10000,"系统未知异常"),
     PRODUCT_UP_EXCEPTION(11000, "商品上架异常"),
     USER_EXIST_EXCEPTION(15001,"用户已存在"),

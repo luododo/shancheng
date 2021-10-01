@@ -36,7 +36,7 @@ public class OAuth2Controller {
         Map<String, String> query = new HashMap<>();
         Map<String, String> map = new HashMap<>();
         map.put("client_id", "1738071962");
-        map.put("client_secret", "177762fff54da4094edf8c690d9d8f27");
+        map.put("client_secret", "");
         map.put("grant_type", "authorization_code");
         map.put("redirect_uri", "http://auth.gulimall.com/oauth2.0/weibo/success");
         map.put("code", code);
